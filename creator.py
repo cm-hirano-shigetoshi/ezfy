@@ -20,6 +20,8 @@ def main():
   sub["base_task.preview"] = settings["base_task"].get("preview", "echo {}")
   sub["base_task.opts"]  = "--" + " --".join(base_opts)
 
+  sub["binds"] = get_binds(**settings["binds"])
+
   sub["expects.definition"] = "ctrl-m"
   sub["expects.operation"] = ""
   for key, ope in settings["expects"].items():
@@ -34,10 +36,17 @@ def main():
   t = t.replace("${base_task.query}", sub["base_task.query"])
   t = t.replace("${base_task.preview}", sub["base_task.preview"])
   t = t.replace("${base_task.opts}", sub["base_task.opts"])
+  t = t.replace("${binds}", sub["binds"])
   t = t.replace("${expects.definition}", sub["expects.definition"])
   t = t.replace("${expects.operation}", sub["expects.operation"])
 
   print(t)
+
+def get_binds(**binds):
+  out = []
+  for k, v in binds.items():
+    out.append(k + ":" + v)
+  return ",".join(out)
 
 def create_stdout(cmd):
   if cmd is None:

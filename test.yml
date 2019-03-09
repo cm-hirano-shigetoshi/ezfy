@@ -5,6 +5,10 @@ base_task:
     - no-mouse
     - ansi
   preview: echo preview={}
+binds:
+  f1: toggle-preview
+  ctrl-r: replace-query
+  ctrl-j: top
 expects:
   ctrl-t:
     stdout: cat -n | pbcopy
