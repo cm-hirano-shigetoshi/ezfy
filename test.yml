@@ -1,7 +1,6 @@
 base_task:
   input: git log --graph --decorate --oneline --color=always
   opts:
-    - exact
     - multi
     - no-mouse
     - ansi
@@ -13,4 +12,10 @@ expects:
       input: cat ~/test.sh
       query: aaa ${result:query}
       preview: pwd
+      opts:
+        - ansi
+      opts-remove:
+        - multi
+      opts-add:
+        - exact
 
