@@ -1,0 +1,14 @@
+init_task:
+  input: git log --graph --decorate --oneline --color=always
+  opts:
+    - exact
+    - multi
+    - no-mouse
+    - ansi
+  preview: echo {}
+expects:
+  ctrl-t:
+    continue: true
+    input: date
+    query: '1'
+
