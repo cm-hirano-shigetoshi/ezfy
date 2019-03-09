@@ -45,15 +45,18 @@ def create_stdout(cmd):
 
 def create_next_task(key, **props):
   out = []
+  out.append("        $query = \"" + expand_result(props.get("query", "${result:query}")) + "\";")
   if "input" in props:
-    out.append("        $input = '" + props["input"] + "';")
-  if "query" in props:
-    out.append("        $query = '" + props["query"] + "';")
+    out.append("        $input = \"" + expand_result(props["input"]) + "\";")
   if "preview" in props:
-    out.append("        $preview = '" + props["preview"] + "';")
+    out.append("        $preview = \"" + expand_result(props["preview"]) + "\";")
   out.append("        next;")
   return "\n" + "\n".join(out)
 
+def expand_result(s):
+   s = s.replace("${result:query}", "$q")
+   s = s.replace("${result:key}", "$k")
+   return s
 
 if __name__ == "__main__":
   main()

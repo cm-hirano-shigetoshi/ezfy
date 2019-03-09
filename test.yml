@@ -10,7 +10,7 @@ expects:
   ctrl-t:
     stdout: cat -n | pbcopy
     continue:
-      input: date
-      query: '1'
+      input: cat ~/test.sh
+      query: aaa ${result:query}
       preview: pwd
 
