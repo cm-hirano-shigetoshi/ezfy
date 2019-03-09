@@ -32,7 +32,9 @@ while (1) {
 
 
     if ($k eq "ctrl-m") {
-        &stdout($ref_outputs);
+        open(my $stdout, "| cat");
+        print $stdout join("\n", @{$ref_outputs});
+        close($stdout);
     ${expects.operation}
     }
     #if ($k eq "ctrl-m") {
@@ -55,9 +57,5 @@ sub split_outputs {
     my @lines = split("\n", $_[0]);
     my ($q, $k) = (shift(@lines), shift(@lines));
     return ($q, $k, \@lines);
-}
-
-sub stdout {
-    print join("\n", @{$_[0]});
 }
 
