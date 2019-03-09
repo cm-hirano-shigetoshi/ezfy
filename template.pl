@@ -5,10 +5,10 @@ use warnings;
 my $fzf = "/Users/hirano.shigetoshi/local/bin/fzf";
 
 # tasks
-my $input = '${init_task.input}';
-my $query = '${init_task.query}';
-my $preview = '${init_task.preview}';
-my $opts = '${init_task.opts}';
+my $input = '${base_task.input}';
+my $query = '${base_task.query}';
+my $preview = '${base_task.preview}';
+my $opts = '${base_task.opts}';
 
 while (1) {
     my $cmd = "";

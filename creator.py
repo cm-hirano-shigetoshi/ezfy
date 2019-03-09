@@ -10,10 +10,10 @@ def main():
   #print(settings)
   sub = {}
 
-  sub["init_task.input"] = settings["init_task"]["input"]
-  sub["init_task.query"] = settings["init_task"].get("query", "")
-  sub["init_task.preview"] = settings["init_task"].get("preview", "echo {}")
-  sub["init_task.opts"]  = "--" + " --".join(settings["init_task"]["opts"])
+  sub["base_task.input"] = settings["base_task"]["input"]
+  sub["base_task.query"] = settings["base_task"].get("query", "")
+  sub["base_task.preview"] = settings["base_task"].get("preview", "echo {}")
+  sub["base_task.opts"]  = "--" + " --".join(settings["base_task"]["opts"])
 
   sub["expects.definition"] = "ctrl-m"
   sub["expects.operation"] = ""
@@ -25,10 +25,10 @@ def main():
     if "continue" in ope:
       sub["expects.operation"] += create_next_task(key, **ope["continue"])
 
-  t = t.replace("${init_task.input}", sub["init_task.input"])
-  t = t.replace("${init_task.query}", sub["init_task.query"])
-  t = t.replace("${init_task.preview}", sub["init_task.preview"])
-  t = t.replace("${init_task.opts}", sub["init_task.opts"])
+  t = t.replace("${base_task.input}", sub["base_task.input"])
+  t = t.replace("${base_task.query}", sub["base_task.query"])
+  t = t.replace("${base_task.preview}", sub["base_task.preview"])
+  t = t.replace("${base_task.opts}", sub["base_task.opts"])
   t = t.replace("${expects.definition}", sub["expects.definition"])
   t = t.replace("${expects.operation}", sub["expects.operation"])
 
