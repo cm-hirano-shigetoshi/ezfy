@@ -19,7 +19,8 @@ def main():
   sub["expects.operation"] = ""
   for key, expect in settings["expects"].items():
     sub["expects.definition"] += "," + key
-    sub["expects.operation"] += hoge(key, **expect)
+    if "continue" in expect:
+      sub["expects.operation"] += create_next_task(key, **expect["continue"])
 
   t = t.replace("${init_task.input}", sub["init_task.input"])
   t = t.replace("${init_task.query}", sub["init_task.query"])
@@ -30,7 +31,7 @@ def main():
 
   print(t)
 
-def hoge(key, **props):
+def create_next_task(key, **props):
   out = []
   out.append("} elsif ($k eq '" + key + "') {")
   if "input" in props:
@@ -39,8 +40,7 @@ def hoge(key, **props):
     out.append("        $query = '" + props["query"] + "';")
   if "preview" in props:
     out.append("        $preview = '" + props["preview"] + "';")
-  if "continue" in props:
-    out.append("        next;")
+  out.append("        next;")
   return "\n".join(out)
 
 

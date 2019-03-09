@@ -8,8 +8,8 @@ init_task:
   preview: echo preview={}
 expects:
   ctrl-t:
-    continue: true
-    input: date
-    query: '1'
-    preview: pwd
+    continue:
+      input: date
+      query: '1'
+      preview: pwd
 
