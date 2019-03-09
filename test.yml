@@ -5,10 +5,11 @@ init_task:
     - multi
     - no-mouse
     - ansi
-  preview: echo {}
+  preview: echo preview={}
 expects:
   ctrl-t:
     continue: true
     input: date
     query: '1'
+    preview: pwd
 

@@ -4,22 +4,21 @@ use warnings;
 
 my $fzf = "/Users/hirano.shigetoshi/local/bin/fzf";
 
-my ($initial_input, $initial_query, $initial_preview) = ("", "", "");
-#$initial_input = "tac ~/.zsh/directory_all.txt | awk '!a[\$1]++'";
-$initial_input = "${init_task.input}";
-$initial_query = "";
-$initial_preview = "${init_task.preview}";
-my ($input, $query) = ($initial_input, $initial_query);
+# tasks
+my $input = '${init_task.input}';
+my $query = '${init_task.query}';
+my $preview = '${init_task.preview}';
+my $opts = '${init_task.opts}';
 
 while (1) {
     my $cmd = "";
     $cmd .= "$input";
     $cmd .= " | $fzf";
     $cmd .= " --print-query";
-    $cmd .= " --query=$query";
-    $cmd .= " ${init_task.opts}";
-    $cmd .= " --preview='${init_task.preview}'";
     $cmd .= " --expect='${expects.definition}'";
+    $cmd .= " $opts";
+    $cmd .= " --query='$query'";
+    $cmd .= " --preview='$preview'";
 
     #$cmd .= " --exact --multi --no-mouse --print-query";
     #$cmd .= " --ansi";
