@@ -23,20 +23,13 @@ while (1) {
     my ($q, $k, $ref_outputs) = &split_outputs(`$cmd`."");
 
 
-    if ($k eq "ctrl-m") {
+    if (0) {
+${expects.operation}
+    } elsif ($k eq "ctrl-m") {
         open(my $stdout, "| cat");
         print $stdout join("\n", @{$ref_outputs});
         close($stdout);
-${expects.operation}
     }
-    #if ($k eq "ctrl-m") {
-    #    &stdout($ref_outputs);
-    #} elsif ($k eq "ctrl-t") {
-    #    $input = "date";
-    #    $query = "1";
-    #    next;
-    #}
-
 
     last;
 }

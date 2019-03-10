@@ -14,7 +14,7 @@ binds:
   alt-r: toggle-preview
   alt-c: execute-silent(echo -n {} | pbcopy)
 expects:
-  ctrl-v:
+  ctrl-m:
     stdout: wc -l
   ctrl-t:
     stdout: cat -n | pbcopy
