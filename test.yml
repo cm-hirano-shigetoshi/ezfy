@@ -6,16 +6,19 @@ base_task:
     - ansi
   preview: echo preview={}
 binds:
-  f1: toggle-preview
-  ctrl-r: replace-query
-  ctrl-j: top
+  up: preview-up
+  down: preview-down
+  alt-k: preview-page-up
+  alt-j: preview-page-down
+  alt-r: toggle-preview
+  alt-c: execute-silent(echo -n {} | pbcopy)
 expects:
   ctrl-t:
     stdout: cat -n | pbcopy
     continue:
       input: cat ~/test.sh
       query: aaa ${result:query}
-      preview: pwd
+      preview: cat creator.py
       opts:
         - ansi
       opts-remove:

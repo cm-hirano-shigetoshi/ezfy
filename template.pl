@@ -21,12 +21,6 @@ while (1) {
     $cmd .= " --query='$query'";
     $cmd .= " --preview='$preview'";
 
-    #$cmd .= " --exact --multi --no-mouse --print-query";
-    #$cmd .= " --ansi";
-    #$cmd .= " --reverse";
-    #$cmd .= " --query='$query'";
-    #$cmd .= " --expect='ctrl-t'";
-    #$cmd .= " --preview='echo {}'";
     #$cmd .= " --preview-window='up'";
     #$cmd .= " --with-nth=1..";
     my ($q, $k, $ref_outputs) = &split_outputs(`$cmd`."");
