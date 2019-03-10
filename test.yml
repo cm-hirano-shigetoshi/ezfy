@@ -1,3 +1,4 @@
+fzf: /Users/hirano.shigetoshi/local/bin/fzf
 base_task:
   input: git log --graph --decorate --oneline --color=always
   opts:

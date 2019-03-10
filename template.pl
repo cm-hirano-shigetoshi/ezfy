@@ -2,9 +2,8 @@
 use strict;
 use warnings;
 
-my $fzf = "/Users/hirano.shigetoshi/local/bin/fzf";
+my $fzf = "${fzf}";
 
-# tasks
 my $input = '${base_task.input}';
 my $query = '${base_task.query}';
 my $preview = '${base_task.preview}';
@@ -20,9 +19,7 @@ while (1) {
     $cmd .= " $opts";
     $cmd .= " --query='$query'";
     $cmd .= " --preview='$preview'";
-
-    #$cmd .= " --preview-window='up'";
-    #$cmd .= " --with-nth=1..";
+    $cmd .= " --preview='$preview'";
     my ($q, $k, $ref_outputs) = &split_outputs(`$cmd`."");
 
 

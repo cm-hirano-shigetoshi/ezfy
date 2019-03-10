@@ -15,6 +15,8 @@ def main():
   base_opts = set(settings["base_task"]["opts"])
   sub = {}
 
+  sub["fzf"] = settings["fzf"]
+
   sub["base_task.input"] = settings["base_task"]["input"]
   sub["base_task.query"] = settings["base_task"].get("query", "")
   sub["base_task.preview"] = settings["base_task"].get("preview", "echo {}")
@@ -32,6 +34,7 @@ def main():
     if "continue" in ope:
       sub["expects.operation"] += create_next_task(key, **ope["continue"])
 
+  t = t.replace("${fzf}", sub["fzf"])
   t = t.replace("${base_task.input}", sub["base_task.input"])
   t = t.replace("${base_task.query}", sub["base_task.query"])
   t = t.replace("${base_task.preview}", sub["base_task.preview"])
