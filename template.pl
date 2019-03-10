@@ -27,7 +27,7 @@ while (1) {
         open(my $stdout, "| cat");
         print $stdout join("\n", @{$ref_outputs});
         close($stdout);
-    ${expects.operation}
+${expects.operation}
     }
     #if ($k eq "ctrl-m") {
     #    &stdout($ref_outputs);

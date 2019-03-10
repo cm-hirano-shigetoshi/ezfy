@@ -28,7 +28,7 @@ def main():
   sub["expects.operation"] = ""
   for key, ope in settings["expects"].items():
     sub["expects.definition"] += "," + key
-    sub["expects.operation"] += "} elsif ($k eq '" + key + "') {"
+    sub["expects.operation"] += "    } elsif ($k eq '" + key + "') {\n"
     if "stdout" in ope:
       sub["expects.operation"] += create_stdout(ope["stdout"])
     if "continue" in ope:
@@ -58,7 +58,7 @@ def create_stdout(cmd):
   out.append("        open(my $stdout, '| " + cmd + "');")
   out.append("        print $stdout join(\"\\n\", @{$ref_outputs});")
   out.append("        close($stdout);")
-  return "\n" + "\n".join(out)
+  return "\n".join(out) + "\n"
 
 def create_next_task(key, **props):
   out = []
@@ -82,7 +82,7 @@ def create_next_task(key, **props):
     opts = opts.union(set(props["opts-add"]))
     out.append("        $opts = '--" + " --".join(opts) + "';")
   out.append("        next;")
-  return "\n" + "\n".join(out)
+  return "\n".join(out) + "\n"
 
 def expand_result(s):
    s = s.replace("${result:query}", "$q")
