@@ -1,13 +1,14 @@
-import yaml
+import sys, yaml
 
 base_opts = set()
 
-def main():
-  with open("template.pl") as file:
+def main(args):
+  (template, yml) = (args[1], args[2])
+  with open(template) as file:
     template = "".join(file.readlines())
   t = template
   #print(template)
-  with open("test.yml") as file:
+  with open(yml) as file:
     settings = yaml.load(file)
   #print(settings)
 
@@ -90,5 +91,5 @@ def expand_result(s):
    return s
 
 if __name__ == "__main__":
-  main()
+  main(sys.argv)
 
