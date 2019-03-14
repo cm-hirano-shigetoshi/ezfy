@@ -35,7 +35,9 @@ def main(args):
       sub["expects.definition"] += "," + key
       sub["expects.operation"] += "    } elsif ($k eq '" + key + "') {\n"
       if "stdout" in ope:
-        sub["expects.operation"] += create_stdout(ope["stdout"])
+        sub["expects.operation"] += create_stdout()
+      if "pipe" in ope:
+        sub["expects.operation"] += create_pipe(ope["pipe"])
       if "continue" in ope:
         sub["expects.operation"] += create_next_task(key, **ope["continue"])
 
@@ -56,12 +58,19 @@ def get_binds(**binds):
     out.append(k + ":" + v)
   return ",".join(out)
 
-def create_stdout(cmd):
+def create_stdout():
+  out = []
+  out.append("        open(my $stdout, '| cat');")
+  out.append("        print $stdout join(\"\\n\", @{$ref_outputs});")
+  out.append("        close($stdout);")
+  return "\n".join(out) + "\n"
+
+def create_pipe(cmd):
   if cmd is None:
     cmd = "cat"
   out = []
   out.append("        open(my $stdout, '| " + cmd + "');")
-  out.append("        print $stdout join(\"\\n\", @{$ref_outputs});")
+  out.append("        print $stdout join(\"\\n\", @{$ref_outputs}).\"\\n\";")
   out.append("        close($stdout);")
   return "\n".join(out) + "\n"
 
