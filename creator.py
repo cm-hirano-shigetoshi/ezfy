@@ -8,6 +8,7 @@ def main(args):
     template = "".join(file.readlines())
   t = template
   #print(template)
+
   with open(yml) as file:
     settings = yaml.load(file)
   #print(settings)
@@ -23,17 +24,20 @@ def main(args):
   sub["base_task.preview"] = settings["base_task"].get("preview", "echo {}")
   sub["base_task.opts"]  = "--" + " --".join(base_opts)
 
-  sub["binds"] = get_binds(**settings["binds"])
+  sub["binds"] = "up:up"
+  if "binds" in settings:
+    sub["binds"] = get_binds(**settings["binds"])
 
   sub["expects.definition"] = "ctrl-m"
   sub["expects.operation"] = ""
-  for key, ope in settings["expects"].items():
-    sub["expects.definition"] += "," + key
-    sub["expects.operation"] += "    } elsif ($k eq '" + key + "') {\n"
-    if "stdout" in ope:
-      sub["expects.operation"] += create_stdout(ope["stdout"])
-    if "continue" in ope:
-      sub["expects.operation"] += create_next_task(key, **ope["continue"])
+  if "expects" in settings:
+    for key, ope in settings["expects"].items():
+      sub["expects.definition"] += "," + key
+      sub["expects.operation"] += "    } elsif ($k eq '" + key + "') {\n"
+      if "stdout" in ope:
+        sub["expects.operation"] += create_stdout(ope["stdout"])
+      if "continue" in ope:
+        sub["expects.operation"] += create_next_task(key, **ope["continue"])
 
   t = t.replace("${fzf}", sub["fzf"])
   t = t.replace("${base_task.input}", sub["base_task.input"])
