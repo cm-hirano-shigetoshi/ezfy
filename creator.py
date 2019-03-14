@@ -76,11 +76,11 @@ def create_pipe(cmd):
 
 def create_next_task(key, **props):
   out = []
-  out.append("        $query = \"" + expand_result(props.get("query", "${result:query}")) + "\";")
+  out.append("        $query = qq" + expand_result(props.get("query", "${result:query}")) + ";")
   if "input" in props:
-    out.append("        $input = \"" + expand_result(props["input"]) + "\";")
+    out.append("        $input = q" + expand_result(props["input"]) + ";")
   if "preview" in props:
-    out.append("        $preview = \"" + expand_result(props["preview"]) + "\";")
+    out.append("        $preview = q" + expand_result(props["preview"]) + ";")
 
   if "opts-clear" in props:
     opts = set()
