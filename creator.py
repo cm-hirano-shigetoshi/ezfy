@@ -82,19 +82,15 @@ def create_next_task(key, **props):
   if "preview" in props:
     out.append("        $preview = \"" + expand_result(props["preview"]) + "\";")
 
-  if "opts" in props:
-    if props["opts"] is None:
-      opts = set()
-    else:
-      opts = set(props["opts"])
+  if "opts-clear" in props:
+    opts = set()
   else:
     opts = base_opts
+  if "opts" in props:
+    opts = opts.union(set(props["opts"]))
   if "opts-remove" in props:
     opts = opts.difference(set(props["opts-remove"]))
-    out.append("        $opts = '--" + " --".join(opts) + "';")
-  if "opts-add" in props:
-    opts = opts.union(set(props["opts-add"]))
-    out.append("        $opts = '--" + " --".join(opts) + "';")
+  out.append("        $opts = '--" + " --".join(opts) + "';")
   out.append("        next;")
   return "\n".join(out) + "\n"
 

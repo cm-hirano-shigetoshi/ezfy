@@ -11,21 +11,20 @@ binds:
   down: preview-down
   alt-k: preview-page-up
   alt-j: preview-page-down
-  alt-r: toggle-preview
+  alt-p: toggle-preview
   alt-c: execute-silent(echo -n {} | pbcopy)
 expects:
   ctrl-m:
-    stdout: wc -l
+    pipe: wc -l
   ctrl-t:
-    stdout: cat -n | pbcopy
+    stdout:
     continue:
       input: cat ~/test.sh
       query: aaa ${result:query}
       preview: cat creator.py
       opts:
         - ansi
+        - preview-window=up
       opts-remove:
         - multi
-      opts-add:
-        - exact
 
