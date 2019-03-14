@@ -25,9 +25,7 @@ while (1) {
     if (0) {
 ${expects.operation}
     } elsif ($k eq "ctrl-m") {
-        open(my $stdout, "| cat");
-        print $stdout join("\n", @{$ref_outputs});
-        close($stdout);
+        print &join_outputs($ref_outputs, "\n", 0, "");
     }
 
     last;
@@ -43,3 +41,12 @@ sub split_outputs {
     return ($q, $k, \@lines);
 }
 
+sub join_outputs {
+    my ($o, $delimiter, $newline, $quote) = @_;
+    my $d = $quote . $delimiter . $quote;
+    my $s = $quote . join($d, @{$o}) . $quote;
+    if ($newline == 1 || ($newline == 0 && scalar(@{$o}) > 1)) {
+        $s .= "\n";
+    }
+    return $s;
+}

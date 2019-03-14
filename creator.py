@@ -60,9 +60,7 @@ def get_binds(**binds):
 
 def create_stdout():
   out = []
-  out.append("        open(my $stdout, '| cat');")
-  out.append("        print $stdout join(\"\\n\", @{$ref_outputs});")
-  out.append("        close($stdout);")
+  out.append("        print &join_outputs($ref_outputs, \"\\n\", 0, \"\");")
   return "\n".join(out) + "\n"
 
 def create_pipe(cmd):
@@ -70,7 +68,7 @@ def create_pipe(cmd):
     cmd = "cat"
   out = []
   out.append("        open(my $stdout, '| " + cmd + "');")
-  out.append("        print $stdout join(\"\\n\", @{$ref_outputs}).\"\\n\";")
+  out.append("        print $stdout &join_outputs($ref_outputs, \"\\n\", 1, \"\");")
   out.append("        close($stdout);")
   return "\n".join(out) + "\n"
 
@@ -95,9 +93,9 @@ def create_next_task(key, **props):
   return "\n".join(out) + "\n"
 
 def expand_result(s):
-   s = s.replace("${result:query}", "$q")
-   s = s.replace("${result:key}", "$k")
-   return s
+  s = s.replace("${result:query}", "$q")
+  s = s.replace("${result:key}", "$k")
+  return s
 
 if __name__ == "__main__":
   main(sys.argv)
