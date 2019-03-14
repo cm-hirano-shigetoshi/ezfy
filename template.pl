@@ -4,10 +4,10 @@ use warnings;
 
 my $fzf = "${fzf}";
 
-my $input = '${base_task.input}';
-my $query = '${base_task.query}';
-my $preview = '${base_task.preview}';
-my $opts = '${base_task.opts}';
+my $input = q${base_task.input};
+my $query = q${base_task.query};
+my $preview = q${base_task.preview};
+my $opts = q${base_task.opts};
 
 while (1) {
     my $cmd = "";
@@ -18,7 +18,6 @@ while (1) {
     $cmd .= " --expect='${expects.definition}'";
     $cmd .= " $opts";
     $cmd .= " --query='$query'";
-    $cmd .= " --preview='$preview'";
     $cmd .= " --preview='$preview'";
     my ($q, $k, $ref_outputs) = &split_outputs(`$cmd`."");
 
