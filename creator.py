@@ -36,7 +36,7 @@ def main(args):
       sub["expects.definition"] += "," + key
       sub["expects.operation"] += "    } elsif ($k eq '" + key + "') {\n"
       if "stdout" in ope:
-        sub["expects.operation"] += create_stdout()
+        sub["expects.operation"] += create_stdout(**ope["stdout"])
       if "pipe" in ope:
         sub["expects.operation"] += create_pipe(ope["pipe"])
       if "continue" in ope:
@@ -59,9 +59,17 @@ def get_binds(**binds):
     out.append(k + ":" + v)
   return "--bind='" + ",".join(out) + "'"
 
-def create_stdout():
+def create_stdout(**opts):
   out = []
-  out.append("        print &join_outputs($ref_outputs, \"\\n\", 0, \"\");")
+  (delimiter, newline, quote) = (" ", "0", "")
+  if type(opts) == dict:
+    if "join" in opts and opts["join"] is not None:
+      delimiter = opts["join"]
+    if "newline" in opts and opts["newline"] is not None:
+      newline = str(opts["newline"])
+    if "quote" in opts and opts["quote"] is not None:
+      quote = opts["quote"]
+  out.append("        print &join_outputs($ref_outputs, \"" + delimiter + "\", " + newline + ", \"" + quote + "\");")
   return "\n".join(out) + "\n"
 
 def create_pipe(cmd):
