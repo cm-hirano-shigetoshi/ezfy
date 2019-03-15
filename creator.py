@@ -14,7 +14,8 @@ def main(args):
   #print(settings)
 
   global base_opts
-  base_opts = set(settings["base_task"]["opts"])
+  if "opts" in settings["base_task"]:
+    base_opts = set(settings["base_task"]["opts"])
   sub = {}
 
   sub["fzf"] = settings["fzf"]
@@ -22,7 +23,7 @@ def main(args):
   sub["base_task.input"] = settings["base_task"]["input"]
   sub["base_task.query"] = settings["base_task"].get("query", "")
   sub["base_task.preview"] = settings["base_task"].get("preview", "echo {}")
-  sub["base_task.opts"]  = "--" + " --".join(base_opts)
+  sub["base_task.opts"]  = " ".join(["--"+x for x in base_opts])
 
   sub["binds"] = "up:up"
   if "binds" in settings:
