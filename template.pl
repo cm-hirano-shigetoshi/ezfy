@@ -14,8 +14,8 @@ while (1) {
     $cmd .= "$input";
     $cmd .= " | $fzf";
     $cmd .= " --print-query";
-    $cmd .= " --bind='${binds}'";
     $cmd .= " --expect='${expects.definition}'";
+    $cmd .= " ${binds}";
     $cmd .= " $opts";
     $cmd .= " --query='$query'";
     $cmd .= " --preview='$preview'";

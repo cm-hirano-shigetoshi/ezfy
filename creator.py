@@ -25,7 +25,7 @@ def main(args):
   sub["base_task.preview"] = settings["base_task"].get("preview", "echo {}")
   sub["base_task.opts"]  = " ".join(["--"+x for x in base_opts])
 
-  sub["binds"] = "up:up"
+  sub["binds"] = ""
   if "binds" in settings:
     sub["binds"] = get_binds(**settings["binds"])
 
@@ -57,7 +57,7 @@ def get_binds(**binds):
   out = []
   for k, v in binds.items():
     out.append(k + ":" + v)
-  return ",".join(out)
+  return "--bind='" + ",".join(out) + "'"
 
 def create_stdout():
   out = []
