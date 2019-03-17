@@ -42,6 +42,8 @@ def main(args):
           sub["expects.operation"] += create_stdout(**ope["stdout"])
       if "pipe" in ope:
         sub["expects.operation"] += create_pipe(ope["pipe"])
+      if "files" in ope:
+        sub["expects.operation"] += create_files()
       if "continue" in ope:
         sub["expects.operation"] += create_next_task(key, **ope["continue"])
 
@@ -81,6 +83,11 @@ def create_pipe(cmd):
   out.append("        open(my $stdout, q| " + cmd + ");")
   out.append("        print $stdout &join_outputs($ref_outputs, \"\\n\", 1, \"\");")
   out.append("        close($stdout);")
+  return "\n".join(out) + "\n"
+
+def create_files():
+  out = []
+  out.append("        print &make_files($ref_outputs);")
   return "\n".join(out) + "\n"
 
 def create_next_task(key, **props):

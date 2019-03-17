@@ -50,3 +50,11 @@ sub join_outputs {
     }
     return $s;
 }
+
+sub make_files {
+    my @files = map {
+        s/^~/$ENV{HOME}/; $_;
+    } @{$_[0]};
+    return "\"" . join("\" \"", @files) . "\"";
+}
+
