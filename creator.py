@@ -18,7 +18,7 @@ def main(args):
     base_opts = set(settings["base_task"]["opts"])
   sub = {}
 
-  sub["fzf"] = settings["fzf"]
+  sub["fzf"] = settings.get("fzf", "fzf")
 
   sub["base_task.input"] = settings["base_task"]["input"]
   sub["base_task.query"] = settings["base_task"].get("query", "")
