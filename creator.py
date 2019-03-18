@@ -80,7 +80,8 @@ def create_pipe(cmd):
   if cmd is None:
     cmd = "cat"
   out = []
-  out.append("        open(my $stdout, q| " + cmd + ");")
+  out.append("        my $cmd = q| " + cmd + ";")
+  out.append("        open(my $stdout, $cmd);")
   out.append("        print $stdout &join_outputs($ref_outputs, \"\\n\", 1, \"\");")
   out.append("        close($stdout);")
   return "\n".join(out) + "\n"
