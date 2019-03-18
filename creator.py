@@ -73,7 +73,9 @@ def create_stdout(**opts):
     newline = str(opts["newline"])
   if "quote" in opts and opts["quote"] is not None:
     quote = opts["quote"]
-  out.append("        print &join_outputs($ref_outputs, \"" + delimiter + "\", " + newline + ", \"" + quote + "\");")
+  out.append("        my $d = q" + delimiter + ";")
+  out.append("        my $q = q" + quote + ";")
+  out.append("        print &join_outputs($ref_outputs, \"$d\", " + newline + ", \"$q\");")
   return "\n".join(out) + "\n"
 
 def create_pipe(cmd):
