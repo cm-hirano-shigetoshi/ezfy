@@ -1,4 +1,4 @@
-import sys, yaml
+import os, sys, yaml
 
 base_opts = set()
 
@@ -37,11 +37,11 @@ def main(args):
       sub["expects.operation"] += "    } elsif ($k eq '" + key + "') {\n"
       if "stdout" in ope:
         if ope["stdout"] is None:
-          sub["expects.operation"] += create_stdout(**{})
+          sub["expects.operation"] += create_pipe(**{})
         else:
-          sub["expects.operation"] += create_stdout(**ope["stdout"])
+          sub["expects.operation"] += create_pipe(**ope["stdout"])
       if "pipe" in ope:
-        sub["expects.operation"] += create_pipe(ope["pipe"])
+        sub["expects.operation"] += create_pipe(**ope["pipe"])
       if "files" in ope:
         sub["expects.operation"] += create_files()
       if "continue" in ope:
@@ -64,27 +64,18 @@ def get_binds(**binds):
     out.append(k + ":" + v)
   return "--bind='" + ",".join(out) + "'"
 
-def create_stdout(**opts):
+def create_pipe(**opts):
+  if "cmd" not in opts:
+    opts["cmd"] = "cat"
+  if "newline" in opts:
+    if opts["newline"] == "auto":
+      opts["cmd"] += " | " + os.path.dirname(__file__) + "/newline.pl auto"
+    elif opts["newline"] == False:
+      opts["cmd"] += " | " + os.path.dirname(__file__) + "/newline.pl no"
   out = []
-  (delimiter, newline, quote) = (" ", "0", "")
-  if "join" in opts and opts["join"] is not None:
-    delimiter = opts["join"]
-  if "newline" in opts and opts["newline"] is not None:
-    newline = str(opts["newline"])
-  if "quote" in opts and opts["quote"] is not None:
-    quote = opts["quote"]
-  out.append("        my $d = q" + delimiter + ";")
-  out.append("        my $q = q" + quote + ";")
-  out.append("        print &join_outputs($ref_outputs, \"$d\", " + newline + ", \"$q\");")
-  return "\n".join(out) + "\n"
-
-def create_pipe(cmd):
-  if cmd is None:
-    cmd = "cat"
-  out = []
-  out.append("        my $cmd = q| " + cmd + ";")
-  out.append("        open(my $stdout, $cmd);")
-  out.append("        print $stdout &join_outputs($ref_outputs, \"\\n\", 1, \"\");")
+  out.append("        my $pipe = q| " + opts["cmd"] + ";")
+  out.append("        open(my $stdout, $pipe);")
+  out.append("        print $stdout &pre_process($ref_outputs, \"\\n\", \"\");")
   out.append("        close($stdout);")
   return "\n".join(out) + "\n"
 

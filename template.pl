@@ -25,7 +25,7 @@ while (1) {
     if (0) {
 ${expects.operation}
     } elsif ($k eq "ctrl-m") {
-        print &join_outputs($ref_outputs, "\n", 0, "");
+        print &pre_process($ref_outputs, "\n", "");
     }
 
     last;
@@ -41,14 +41,11 @@ sub split_outputs {
     return ($q, $k, \@lines);
 }
 
-sub join_outputs {
-    my ($o, $delimiter, $newline, $quote) = @_;
+sub pre_process {
+    my ($o, $delimiter, $quote) = @_;
     my $d = $quote . $delimiter . $quote;
     my $s = $quote . join($d, @{$o}) . $quote;
-    if ($newline == 1 || ($newline == 0 && scalar(@{$o}) > 1)) {
-        $s .= "\n";
-    }
-    return $s;
+    return $s . "\n";
 }
 
 sub make_files {
