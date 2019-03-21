@@ -17,7 +17,7 @@ while (1) {
     $cmd .= " --expect='${expects.definition}'";
     $cmd .= " ${binds}";
     $cmd .= " $opts";
-    $cmd .= " --query='$query'";
+    $cmd .= " --query=\"$query\"";
     $cmd .= " --preview='$preview'";
     my ($q, $k, $ref_outputs) = &split_outputs(`$cmd`."");
 
