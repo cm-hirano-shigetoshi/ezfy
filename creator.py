@@ -37,11 +37,9 @@ def main(args):
       sub["expects.operation"] += "    } elsif ($k eq '" + key + "') {\n"
       if "stdout" in ope:
         if ope["stdout"] is None:
-          sub["expects.operation"] += create_pipe(**{})
+          sub["expects.operation"] += create_stdout(**{})
         else:
-          sub["expects.operation"] += create_pipe(**ope["stdout"])
-      if "pipe" in ope:
-        sub["expects.operation"] += create_pipe(**ope["pipe"])
+          sub["expects.operation"] += create_stdout(**ope["stdout"])
       if "files" in ope:
         sub["expects.operation"] += create_files()
       if "continue" in ope:
@@ -64,16 +62,16 @@ def get_binds(**binds):
     out.append(k + ":" + v)
   return "--bind='" + ",".join(out) + "'"
 
-def create_pipe(**opts):
-  if "cmd" not in opts:
-    opts["cmd"] = "cat"
+def create_stdout(**opts):
+  if "pipe" not in opts:
+    opts["pipe"] = "cat"
   if "newline" in opts:
     if opts["newline"] == "auto":
-      opts["cmd"] += " | " + os.path.dirname(__file__) + "/newline.pl auto"
+      opts["pipe"] += " | " + os.path.dirname(__file__) + "/newline.pl auto"
     elif opts["newline"] == False:
-      opts["cmd"] += " | " + os.path.dirname(__file__) + "/newline.pl no"
+      opts["pipe"] += " | " + os.path.dirname(__file__) + "/newline.pl no"
   out = []
-  out.append("        my $pipe = q| " + opts["cmd"] + ";")
+  out.append("        my $pipe = q| " + opts["pipe"] + ";")
   out.append("        open(my $stdout, $pipe);")
   out.append("        print $stdout &pre_process($ref_outputs, \"\\n\", \"\");")
   out.append("        close($stdout);")

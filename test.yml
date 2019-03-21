@@ -15,8 +15,8 @@ binds:
   alt-c: execute-silent(echo -n {} | pbcopy)
 expects:
   ctrl-m:
-    pipe:
-      cmd: cat
+    stdout:
+      pipe: cat
       newline: auto
   ctrl-t:
     stdout:
