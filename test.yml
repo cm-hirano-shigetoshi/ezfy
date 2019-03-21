@@ -16,6 +16,7 @@ binds:
 expects:
   ctrl-m:
     stdout:
+      nth: 1..-1
       pipe: cat
       newline: auto
   ctrl-t:

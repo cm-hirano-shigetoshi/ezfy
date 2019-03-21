@@ -63,6 +63,11 @@ def get_binds(**binds):
   return "--bind='" + ",".join(out) + "'"
 
 def create_stdout(**opts):
+  out = []
+  if "nth" in opts:
+    delimiter = str(opts.get("delimiter", "\\s+"))
+    out.append("        my $d = q" + delimiter + ";")
+    out.append("        $ref_outputs = &nth($ref_outputs, \"" + str(opts["nth"]) + "\", \"$d\");")
   if "pipe" not in opts:
     opts["pipe"] = "cat"
   if "newline" in opts:
@@ -70,7 +75,6 @@ def create_stdout(**opts):
       opts["pipe"] += " | " + os.path.dirname(__file__) + "/newline.pl auto"
     elif opts["newline"] == False:
       opts["pipe"] += " | " + os.path.dirname(__file__) + "/newline.pl no"
-  out = []
   out.append("        my $pipe = q| " + opts["pipe"] + ";")
   out.append("        open(my $stdout, $pipe);")
   out.append("        print $stdout &pre_process($ref_outputs, \"\\n\", \"\");")

@@ -31,6 +31,29 @@ ${expects.operation}
     last;
 }
 
+sub nth {
+    my ($o, $n, $d) = @_;
+    my $joiner = ($d eq '\s+')? " " : $d;
+    my @nth = split(",", $n);
+    my @return = ();
+    foreach (@{$o}) {
+        my @tokens = split($d, $_);
+        my @one_line = ();
+        foreach (@nth) {
+            s/(-\d+)/scalar(@tokens) + $1/ge;
+            if (/^(\d+)\.\.(\d*)$/) {
+                for (my $i=$1; $i<=$2; $i++) {
+                    push(@one_line, $tokens[$i]);
+                }
+            } else {
+                push(@one_line, $tokens[$_]);
+            }
+        }
+        push(@return, join($joiner, @one_line));
+    }
+    return \@return;
+}
+
 sub split_outputs {
     if ($_[0] =~ /^\s*$/) {
         exit -1;
