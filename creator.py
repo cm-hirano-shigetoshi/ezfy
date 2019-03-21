@@ -40,8 +40,6 @@ def main(args):
           sub["expects.operation"] += create_stdout(**{})
         else:
           sub["expects.operation"] += create_stdout(**ope["stdout"])
-      if "files" in ope:
-        sub["expects.operation"] += create_files()
       if "continue" in ope:
         sub["expects.operation"] += create_next_task(key, **ope["continue"])
 
@@ -68,32 +66,31 @@ def create_stdout(**opts):
     delimiter = opts.get("delimiter", "\\s+")
     out.append("        my $nth_delimiter = q" + delimiter + ";")
     out.append("        $ref_outputs = &nth($ref_outputs, \"" + str(opts["nth"]) + "\", \"$nth_delimiter\");")
-  if "join" in opts:
-    joiner = opts["join"] if opts["join"] is not None else " "
-    out.append("        my $joiner = q" + joiner + ";")
+  if "files" in opts:
+    out.append("        print &make_files($ref_outputs);")
+    return "\n".join(out) + "\n"
   else:
-    out.append("        my $joiner = \"\\n\";")
-  if "quote" in opts:
-    quote = opts["quote"]
-    out.append("        my $quote = q" + quote + ";")
-  else:
-    out.append("        my $quote = \"\";")
-  if "pipe" not in opts:
-    opts["pipe"] = "cat"
-  if "newline" in opts:
-    if opts["newline"] == "auto":
-      opts["pipe"] += " | " + os.path.dirname(__file__) + "/newline.pl auto"
-    elif opts["newline"] == False:
-      opts["pipe"] += " | " + os.path.dirname(__file__) + "/newline.pl no"
+    if "join" in opts:
+      joiner = opts["join"] if opts["join"] is not None else " "
+      out.append("        my $joiner = q" + joiner + ";")
+    else:
+      out.append("        my $joiner = \"\\n\";")
+    if "quote" in opts:
+      quote = opts["quote"]
+      out.append("        my $quote = q" + quote + ";")
+    else:
+      out.append("        my $quote = \"\";")
+    if "pipe" not in opts:
+      opts["pipe"] = "cat"
+    if "newline" in opts:
+      if opts["newline"] == "auto":
+        opts["pipe"] += " | " + os.path.dirname(__file__) + "/newline.pl auto"
+      elif opts["newline"] == False:
+        opts["pipe"] += " | " + os.path.dirname(__file__) + "/newline.pl no"
   out.append("        my $pipe = q| " + opts["pipe"] + ";")
   out.append("        open(my $stdout, $pipe);")
   out.append("        print $stdout &pre_process($ref_outputs, \"$joiner\", \"$quote\");")
   out.append("        close($stdout);")
-  return "\n".join(out) + "\n"
-
-def create_files():
-  out = []
-  out.append("        print &make_files($ref_outputs);")
   return "\n".join(out) + "\n"
 
 def create_next_task(key, **props):
