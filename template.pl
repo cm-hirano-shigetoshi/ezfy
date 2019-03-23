@@ -74,10 +74,9 @@ sub pre_process {
     return $s . "\n";
 }
 
-sub make_files {
-    my @files = map {
-        s/^~/$ENV{HOME}/; $_;
+sub escape {
+    my @lines = map {
+        s/ /\\ /g; $_;
     } @{$_[0]};
-    return "\"" . join("\" \"", @files) . "\"";
+    return \@lines;
 }
-

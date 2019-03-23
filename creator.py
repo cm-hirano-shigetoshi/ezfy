@@ -67,7 +67,8 @@ def create_stdout(**opts):
     out.append("        my $nth_delimiter = q" + delimiter + ";")
     out.append("        $ref_outputs = &nth($ref_outputs, \"" + str(opts["nth"]) + "\", \"$nth_delimiter\");")
   if "files" in opts:
-    out.append("        print &make_files($ref_outputs);")
+    out.append("        $ref_outputs = &escape($ref_outputs);")
+    out.append("        print &pre_process($ref_outputs, \" \", \"\");")
     return "\n".join(out) + "\n"
   else:
     if "join" in opts:
