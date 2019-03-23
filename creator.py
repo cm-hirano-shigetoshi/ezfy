@@ -43,14 +43,25 @@ def main(args):
       if "continue" in ope:
         sub["expects.operation"] += create_next_task(key, **ope["continue"])
 
+  sub["base_task.line_select.hide"] = ""
+  sub["extra.declaration"] = ""
+  sub["extra.before_fzf"] = ""
+  if "line_select" in settings["base_task"]:
+    sub["base_task.line_select.hide"] = settings["base_task"]["line_select"].get("hide", "cat")
+    sub["extra.declaration"] = "my $temp_file = `mktemp -t 'fzfer_line_select_xxxxxxxx`";
+    sub["extra.before_fzf"] = "| tee '$temp_file' | $hide | cat -n";
+
   t = t.replace("${fzf}", sub["fzf"])
   t = t.replace("${base_task.input}", sub["base_task.input"])
   t = t.replace("${base_task.query}", sub["base_task.query"])
   t = t.replace("${base_task.preview}", sub["base_task.preview"])
   t = t.replace("${base_task.opts}", sub["base_task.opts"])
+  t = t.replace("${base_task.line_select.hide}", sub["base_task.line_select.hide"])
   t = t.replace("${binds}", sub["binds"])
   t = t.replace("${expects.definition}", sub["expects.definition"])
   t = t.replace("${expects.operation}", sub["expects.operation"])
+  t = t.replace("${extra.declaration}", sub["extra.declaration"])
+  t = t.replace("${extra.before_fzf}", sub["extra.before_fzf"])
 
   print(t)
 

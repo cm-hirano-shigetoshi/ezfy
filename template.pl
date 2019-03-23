@@ -8,10 +8,14 @@ my $input = q${base_task.input};
 my $query = q${base_task.query};
 my $preview = q${base_task.preview};
 my $opts = q${base_task.opts};
+my $hide = q${base_task.line_select.hide};
+
+${extra.declaration}
 
 while (1) {
     my $cmd = "";
     $cmd .= "$input";
+    $cmd .= " ${extra.before_fzf}";
     $cmd .= " | SHELL=bash $fzf";
     $cmd .= " --print-query";
     $cmd .= " --expect='${expects.definition}'";
@@ -92,3 +96,24 @@ sub escape {
     } @{$_[0]};
     return \@lines;
 }
+
+sub make_temp {
+    return `mktemp -t 'fzfer_line_select_xxxxxxxx`;
+}
+
+sub line_select {
+    open(my $file, "cat '$_[0]' | fzf --ansi --filter='^' |");
+    my @lines = (<$file>);
+    close($file);
+    my @selected = ();
+    foreach (@{$_[1]}) {
+        if (/^\s*(\d+)\s/) {
+            $_ = $lines[$1-1];
+            s/^\s*(\d+)\s+//;
+            s/[\r\n]//g;
+            push(@selected, $_);
+        }
+    }
+    return \@selected;
+}
+
