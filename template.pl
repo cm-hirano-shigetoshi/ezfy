@@ -40,16 +40,28 @@ sub nth {
     my @nth = split(",", $n);
     my @return = ();
     foreach (@{$o}) {
-        my @tokens = split($d, $_);
+        my @tokens = grep { length($_) > 0 } split($d, $_);
         my @one_line = ();
         foreach (@nth) {
-            s/(-\d+)/scalar(@tokens) + $1/ge;
-            if (/^(\d+)\.\.(\d*)$/) {
+            s/(-\d+)/scalar(@tokens) + $1 + 1/ge;
+            if ($_ eq "..") {
+                for (my $i=1; $i<=$#tokens+1; $i++) {
+                    push(@one_line, $tokens[$i-1]);
+                }
+            } elsif (/^(\d+)\.\.(\d+)$/) {
                 for (my $i=$1; $i<=$2; $i++) {
-                    push(@one_line, $tokens[$i]);
+                    push(@one_line, $tokens[$i-1]);
+                }
+            } elsif (/^(\d+)\.\.$/) {
+                for (my $i=$1; $i<=$#tokens+1; $i++) {
+                    push(@one_line, $tokens[$i-1]);
+                }
+            } elsif (/^\.\.(\d+)$/) {
+                for (my $i=1; $i<=$1; $i++) {
+                    push(@one_line, $tokens[$i-1]);
                 }
             } else {
-                push(@one_line, $tokens[$_]);
+                push(@one_line, $tokens[$_-1]);
             }
         }
         push(@return, join($joiner, @one_line));
