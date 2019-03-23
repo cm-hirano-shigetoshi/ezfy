@@ -12,7 +12,7 @@ my $opts = q${base_task.opts};
 while (1) {
     my $cmd = "";
     $cmd .= "$input";
-    $cmd .= " | $fzf";
+    $cmd .= " | SHELL=bash $fzf";
     $cmd .= " --print-query";
     $cmd .= " --expect='${expects.definition}'";
     $cmd .= " ${binds}";
