@@ -20,11 +20,14 @@ while (1) {
     $cmd .= " --query=\"$query\"";
     $cmd .= " --preview='$preview'";
     my ($q, $k, $ref_outputs) = &split_outputs(`$cmd`."");
+    if ($opts =~ /--select-1/ && $k eq "") {
+        $k = "select-1";
+    }
 
 
     if (0) {
 ${expects.operation}
-    } elsif ($k eq "ctrl-m") {
+    } elsif ($k eq "ctrl-m" || $k eq "select-1") {
         print &pre_process($ref_outputs, "\n", "");
     }
 
