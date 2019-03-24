@@ -8,7 +8,7 @@ my $input = q${base_task.input};
 my $query = q${base_task.query};
 my $preview = q${base_task.preview};
 my $opts = q${base_task.opts};
-my $hide = q${base_task.line_select.hide};
+my $filter = q${base_task.line_select.filter};
 
 ${extra.declaration}
 

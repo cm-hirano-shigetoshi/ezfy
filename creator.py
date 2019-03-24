@@ -40,23 +40,28 @@ def main(args):
           sub["expects.operation"] += create_stdout(**{})
         else:
           sub["expects.operation"] += create_stdout(**ope["stdout"])
+      if "line_select" in ope:
+        if ope["line_select"] is None:
+          sub["expects.operation"] += create_line_select(**{})
+        else:
+          sub["expects.operation"] += create_line_select(**ope["line_select"])
       if "continue" in ope:
         sub["expects.operation"] += create_next_task(key, **ope["continue"])
 
-  sub["base_task.line_select.hide"] = ""
+  sub["base_task.line_select.filter"] = ""
   sub["extra.declaration"] = ""
   sub["extra.before_fzf"] = ""
   if "line_select" in settings["base_task"]:
-    sub["base_task.line_select.hide"] = settings["base_task"]["line_select"].get("hide", "cat")
-    sub["extra.declaration"] = "my $temp_file = `mktemp -t 'fzfer_line_select_xxxxxxxx`";
-    sub["extra.before_fzf"] = "| tee '$temp_file' | $hide | cat -n";
+    sub["base_task.line_select.filter"] = settings["base_task"]["line_select"].get("filter", "cat")
+    sub["extra.declaration"] = "my $temp_file = `mktemp -t 'fzfer_line_select_XXXXXXXX'`;"
+    sub["extra.before_fzf"] = "| tee '$temp_file' | $filter | cat -n";
 
   t = t.replace("${fzf}", sub["fzf"])
   t = t.replace("${base_task.input}", sub["base_task.input"])
   t = t.replace("${base_task.query}", sub["base_task.query"])
   t = t.replace("${base_task.preview}", sub["base_task.preview"])
   t = t.replace("${base_task.opts}", sub["base_task.opts"])
-  t = t.replace("${base_task.line_select.hide}", sub["base_task.line_select.hide"])
+  t = t.replace("${base_task.line_select.filter}", sub["base_task.line_select.filter"])
   t = t.replace("${binds}", sub["binds"])
   t = t.replace("${expects.definition}", sub["expects.definition"])
   t = t.replace("${expects.operation}", sub["expects.operation"])
@@ -104,6 +109,10 @@ def create_stdout(**opts):
   out.append("        print $stdout &pre_process($ref_outputs, \"$joiner\", \"$quote\");")
   out.append("        close($stdout);")
   return "\n".join(out) + "\n"
+
+def create_line_select(**opts):
+  out = "        $ref_outputs = &line_select($temp_file, $ref_outputs);"
+  return out + "\n" + create_stdout(**opts)
 
 def create_next_task(key, **props):
   out = []
