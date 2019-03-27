@@ -33,7 +33,8 @@ def main(args):
   sub["expects.operation"] = ""
   if "expects" in settings:
     for key, ope in settings["expects"].items():
-      sub["expects.definition"] += "," + key
+      if key != "select-1":
+        sub["expects.definition"] += "," + key
       sub["expects.operation"] += "    } elsif ($k eq '" + key + "') {\n"
       if "stdout" in ope:
         if ope["stdout"] is None:
