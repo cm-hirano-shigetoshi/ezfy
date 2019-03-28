@@ -35,7 +35,10 @@ def main(args):
     for key, ope in settings["expects"].items():
       if key != "select-1":
         sub["expects.definition"] += "," + key
-      sub["expects.operation"] += "    } elsif ($k eq '" + key + "') {\n"
+      if key == "enter":
+        sub["expects.operation"] += "    } elsif ($k eq 'enter' || $k eq 'select-1') {\n"
+      else:
+        sub["expects.operation"] += "    } elsif ($k eq '" + key + "') {\n"
       if "stdout" in ope:
         if ope["stdout"] is None:
           sub["expects.operation"] += create_stdout(**{})
