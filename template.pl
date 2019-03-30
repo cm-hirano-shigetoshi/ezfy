@@ -38,6 +38,20 @@ ${expects.operation}
     last;
 }
 
+sub make_temp {
+    return `mktemp -t 'fzfer_line_select_xxxxxxxx`;
+}
+
+sub split_outputs {
+    if ($_[0] =~ /^\s*$/) {
+        exit -1;
+    }
+
+    my @lines = split("\n", $_[0]);
+    my ($q, $k) = (shift(@lines), shift(@lines));
+    return ($q, $k, \@lines);
+}
+
 sub nth {
     my ($o, $n, $d) = @_;
     my $joiner = ($d eq '\s+')? " " : $d;
@@ -73,32 +87,20 @@ sub nth {
     return \@return;
 }
 
-sub split_outputs {
-    if ($_[0] =~ /^\s*$/) {
-        exit -1;
-    }
-
-    my @lines = split("\n", $_[0]);
-    my ($q, $k) = (shift(@lines), shift(@lines));
-    return ($q, $k, \@lines);
-}
-
-sub pre_process {
-    my ($o, $delimiter, $quote) = @_;
-    my $d = $quote . $delimiter . $quote;
-    my $s = $quote . join($d, @{$o}) . $quote;
-    return $s . "\n";
-}
-
-sub escape {
+sub expand_home {
     my @lines = map {
-        s/ /\\ /g; $_;
+        s/^~/$ENV{HOME}/; $_;
     } @{$_[0]};
     return \@lines;
 }
 
-sub make_temp {
-    return `mktemp -t 'fzfer_line_select_xxxxxxxx`;
+sub quotation {
+    my @lines = map {
+        if (/[ !']/) {
+            "'" . $_ . "'";
+        }
+    } @{$_[0]};
+    return \@lines;
 }
 
 sub line_select {

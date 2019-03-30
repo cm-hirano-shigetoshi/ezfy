@@ -44,6 +44,8 @@ def main(args):
           sub["expects.operation"] += create_stdout(**{})
         else:
           sub["expects.operation"] += create_stdout(**ope["stdout"])
+      if "pipe" in ope:
+        sub["expects.operation"] += create_pipe(ope["pipe"])
       if "line_select" in ope:
         if ope["line_select"] is None:
           sub["expects.operation"] += create_line_select(**{})
@@ -80,38 +82,32 @@ def get_binds(**binds):
     out.append(k + ":" + v)
   return "--bind='" + ",".join(out) + "'"
 
+def create_pipe(cmd):
+  out = []
+  out.append("        my $pipe = q| " + cmd + ";")
+  out.append("        open(PIPE, $pipe);")
+  out.append("        print PIPE join(\"\\n\", @{$ref_outputs});")
+  out.append("        close(PIPE);")
+  return "\n".join(out) + "\n"
+
 def create_stdout(**opts):
   out = []
   if "nth" in opts:
     delimiter = opts.get("delimiter", "\\s+")
     out.append("        my $nth_delimiter = q" + delimiter + ";")
     out.append("        $ref_outputs = &nth($ref_outputs, \"" + str(opts["nth"]) + "\", \"$nth_delimiter\");")
-  if "files" in opts:
-    out.append("        $ref_outputs = &escape($ref_outputs);")
-    out.append("        print &pre_process($ref_outputs, \" \", \"\");")
-    return "\n".join(out) + "\n"
-  else:
-    if "join" in opts:
-      joiner = opts["join"] if opts["join"] is not None else " "
-      out.append("        my $joiner = q" + joiner + ";")
-    else:
-      out.append("        my $joiner = \"\\n\";")
-    if "quote" in opts:
-      quote = opts["quote"]
-      out.append("        my $quote = q" + quote + ";")
-    else:
-      out.append("        my $quote = \"\";")
-    if "pipe" not in opts:
-      opts["pipe"] = "cat"
-    if "newline" in opts:
-      if opts["newline"] == "auto":
-        opts["pipe"] += " | " + os.path.dirname(__file__) + "/newline.pl auto"
-      elif opts["newline"] == False:
-        opts["pipe"] += " | " + os.path.dirname(__file__) + "/newline.pl no"
-  out.append("        my $pipe = q| " + opts["pipe"] + ";")
-  out.append("        open(my $stdout, $pipe);")
-  out.append("        print $stdout &pre_process($ref_outputs, \"$joiner\", \"$quote\");")
-  out.append("        close($stdout);")
+  if "file" in opts:
+    out.append("        $ref_outputs = &expand_home($ref_outputs);")
+  if "quote" in opts:
+    out.append("        my $quote = q" + opts["quote"] + ";")
+    out.append("        $ref_outputs = &quotation($ref_outputs, $quote);")
+  joiner = "\n"
+  if "join" in opts:
+    joiner = opts["join"] if opts["join"] is not None else " "
+  out.append("        my $joiner = q" + joiner + ";")
+  out.append("        my $prefix = q" + opts.get("prefix", "") + ";")
+  out.append("        my $suffix = q" + opts.get("suffix", "") + ";")
+  out.append("        print $prefix . join(\"\\n\", @{$ref_outputs}) . $suffix;")
   return "\n".join(out) + "\n"
 
 def create_line_select(**opts):

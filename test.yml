@@ -17,8 +17,8 @@ expects:
   ctrl-m:
     stdout:
       nth: 1..-1
-      pipe: cat
-      newline: auto
+  ctrl-u:
+    pipe: cat
   ctrl-t:
     stdout:
     continue:
