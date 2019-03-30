@@ -101,7 +101,7 @@ def create_stdout(**opts):
   out.append("        my $joiner = q" + joiner + ";")
   out.append("        my $prefix = q" + opts.get("prefix", "") + ";")
   out.append("        my $suffix = q" + opts.get("suffix", "") + ";")
-  out.append("        print $prefix . join(\"\\n\", @{$ref_outputs}) . $suffix;")
+  out.append("        print $prefix . join($joiner, @{$ref_outputs}) . $suffix;")
   return "\n".join(out) + "\n"
 
 def create_pipe(cmd):
