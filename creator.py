@@ -93,7 +93,8 @@ def create_stdout(**opts):
   if "file" in opts:
     out.append("        $ref_outputs = &expand_home($ref_outputs);")
   if "quote" in opts:
-    out.append("        my $quote = q" + opts["quote"] + ";")
+    quote = opts["quote"] if opts["quote"] is not None else ""
+    out.append("        my $quote = q" + quote + ";")
     out.append("        $ref_outputs = &quotation($ref_outputs, $quote);")
   joiner = "\n"
   if "join" in opts:

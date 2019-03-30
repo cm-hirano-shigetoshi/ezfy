@@ -95,12 +95,23 @@ sub expand_home {
 }
 
 sub quotation {
-    my @lines = map {
-        if (/[ !']/) {
-            "'" . $_ . "'";
-        }
-    } @{$_[0]};
-    return \@lines;
+    if ($_[1] eq "") {
+      my @lines = map {
+          if (/'/) {
+              '"' . $_ . '"';
+          } elsif (/[ \["&()|`;<!]/) {
+              "'" . $_ . "'";
+          } else {
+              $_;
+          }
+      } @{$_[0]};
+      return \@lines;
+    } else {
+      my @lines = map {
+          $_[1] . $_ . $_[1];
+      } @{$_[0]};
+      return \@lines;
+    }
 }
 
 sub line_select {
