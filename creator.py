@@ -44,14 +44,16 @@ def main(args):
           sub["expects.operation"] += create_stdout(**{})
         else:
           sub["expects.operation"] += create_stdout(**ope["stdout"])
-      if "pipe" in ope:
-        sub["expects.operation"] += create_pipe(ope["pipe"])
-      if "line_select" in ope:
+      elif "line_select" in ope:
         if ope["line_select"] is None:
           sub["expects.operation"] += create_line_select(**{})
         else:
           sub["expects.operation"] += create_line_select(**ope["line_select"])
-      if "continue" in ope:
+      elif "pipe" in ope:
+        sub["expects.operation"] += create_pipe(ope["pipe"])
+      elif "line_select_pipe" in ope:
+        sub["expects.operation"] += create_line_select_pipe(ope["line_select_pipe"])
+      elif "continue" in ope:
         sub["expects.operation"] += create_next_task(key, **ope["continue"])
 
   sub["base_task.line_select.filter"] = ""
@@ -82,14 +84,6 @@ def get_binds(**binds):
     out.append(k + ":" + v)
   return "--bind='" + ",".join(out) + "'"
 
-def create_pipe(cmd):
-  out = []
-  out.append("        my $pipe = q| " + cmd + ";")
-  out.append("        open(PIPE, $pipe);")
-  out.append("        print PIPE join(\"\\n\", @{$ref_outputs});")
-  out.append("        close(PIPE);")
-  return "\n".join(out) + "\n"
-
 def create_stdout(**opts):
   out = []
   if "nth" in opts:
@@ -110,9 +104,21 @@ def create_stdout(**opts):
   out.append("        print $prefix . join(\"\\n\", @{$ref_outputs}) . $suffix;")
   return "\n".join(out) + "\n"
 
+def create_pipe(cmd):
+  out = []
+  out.append("        my $pipe = q| " + cmd + ";")
+  out.append("        open(PIPE, $pipe);")
+  out.append("        print PIPE join(\"\\n\", @{$ref_outputs});")
+  out.append("        close(PIPE);")
+  return "\n".join(out) + "\n"
+
 def create_line_select(**opts):
   out = "        $ref_outputs = &line_select($temp_file, $ref_outputs);"
   return out + "\n" + create_stdout(**opts)
+
+def create_line_select_pipe(cmd):
+  out = "        $ref_outputs = &line_select($temp_file, $ref_outputs);"
+  return out + "\n" + create_pipe(cmd)
 
 def create_next_task(key, **props):
   out = []
