@@ -32,7 +32,7 @@ while (1) {
     if (0) {
 ${expects.operation}
     } elsif ($k eq "ctrl-m" || $k eq "select-1") {
-        print &pre_process($ref_outputs, "\n", "");
+        print join("\n", @{$ref_outputs});
     }
 
     last;
