@@ -123,11 +123,17 @@ def create_line_select_pipe(cmd):
 
 def create_next_task(key, **props):
   out = []
-  out.append("        $query = qq" + expand_result(props.get("query", "${result:query}")) + ";")
+  out.append("        $query = q" + props.get("query", "${q}") + ";")
+  out.append("        $query =~ s/\\${q}/$q/g;")
+  out.append("        $query =~ s/\\${k}/$k/g;")
   if "input" in props:
-    out.append("        $input = q" + expand_result(props["input"]) + ";")
+    out.append("        $input = q" + props["input"] + ";")
+    out.append("        $input =~ s/\\${q}/$q/g;")
+    out.append("        $input =~ s/\\${k}/$k/g;")
   if "preview" in props:
-    out.append("        $preview = q" + expand_result(props["preview"]) + ";")
+    out.append("        $preview = q" + props["preview"] + ";")
+    out.append("        $preview =~ s/\\${q}/$q/g;")
+    out.append("        $preview =~ s/\\${k}/$k/g;")
 
   if "opts-clear" in props:
     opts = set()
@@ -140,11 +146,6 @@ def create_next_task(key, **props):
   out.append("        $opts = q--" + " --".join(opts) + ";")
   out.append("        next;")
   return "\n".join(out) + "\n"
-
-def expand_result(s):
-  s = s.replace("${result:query}", "$q")
-  s = s.replace("${result:key}", "$k")
-  return s
 
 if __name__ == "__main__":
   main(sys.argv)
