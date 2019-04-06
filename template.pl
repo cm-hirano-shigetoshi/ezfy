@@ -23,7 +23,7 @@ while (1) {
     $cmd .= " $opts";
     $cmd .= " --query=\"$query\"";
     $cmd .= " --preview='$preview'";
-    my ($q, $k, $ref_outputs) = &split_outputs(`$cmd`."");
+    my ($q, $k, $o, $ref_outputs) = &split_outputs(`$cmd`."");
     if ($opts =~ /--select-1/ && $k eq "") {
         $k = "select-1";
     }
@@ -48,8 +48,8 @@ sub split_outputs {
     }
 
     my @lines = split("\n", $_[0]);
-    my ($q, $k) = (shift(@lines), shift(@lines));
-    return ($q, $k, \@lines);
+    my ($q, $k, $o) = (shift(@lines), shift(@lines), $lines[$#lines]);
+    return ($q, $k, $o, \@lines);
 }
 
 sub nth {

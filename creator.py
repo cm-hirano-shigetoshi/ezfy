@@ -126,14 +126,17 @@ def create_next_task(key, **props):
   out.append("        $query = q" + props.get("query", "${q}") + ";")
   out.append("        $query =~ s/\\${q}/$q/g;")
   out.append("        $query =~ s/\\${k}/$k/g;")
+  out.append("        $query =~ s/\\${o}/$o/g;")
   if "input" in props:
     out.append("        $input = q" + props["input"] + ";")
     out.append("        $input =~ s/\\${q}/$q/g;")
     out.append("        $input =~ s/\\${k}/$k/g;")
+    out.append("        $input =~ s/\\${o}/$o/g;")
   if "preview" in props:
     out.append("        $preview = q" + props["preview"] + ";")
     out.append("        $preview =~ s/\\${q}/$q/g;")
     out.append("        $preview =~ s/\\${k}/$k/g;")
+    out.append("        $preview =~ s/\\${o}/$o/g;")
 
   if "opts-clear" in props:
     opts = set()
