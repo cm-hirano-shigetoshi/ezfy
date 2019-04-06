@@ -1,6 +1,6 @@
 fzf: /Users/hirano.shigetoshi/local/bin/fzf
 base_task:
-  input: git log --graph --decorate --oneline --color=always
+  input: echo ${1}
   opts:
     - multi
     - no-mouse
@@ -20,9 +20,8 @@ expects:
   ctrl-u:
     pipe: cat
   ctrl-t:
-    stdout:
     continue:
-      input: cat ~/test.sh
+      input: cat ${2}
       query: aaa ${result:query}
       preview: cat creator.py
       opts:
