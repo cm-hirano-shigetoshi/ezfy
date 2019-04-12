@@ -22,6 +22,36 @@ def main(args):
 
     sub["fzf"] = settings.get("fzf", "fzf")
 
+    sub["variables"] = ""
+    if "variables" in settings:
+        if "var1" in settings["variables"]:
+            sub["variables"] += "$ENV{var1} = `" + settings["variables"][
+                "var1"] + "`;"
+        if "var2" in settings["variables"]:
+            sub["variables"] += "$ENV{var2} = `" + settings["variables"][
+                "var2"] + "`;"
+        if "var3" in settings["variables"]:
+            sub["variables"] += "$ENV{var3} = `" + settings["variables"][
+                "var3"] + "`;"
+        if "var4" in settings["variables"]:
+            sub["variables"] += "$ENV{var4} = `" + settings["variables"][
+                "var4"] + "`;"
+        if "var5" in settings["variables"]:
+            sub["variables"] += "$ENV{var5} = `" + settings["variables"][
+                "var5"] + "`;"
+        if "var6" in settings["variables"]:
+            sub["variables"] += "$ENV{var6} = `" + settings["variables"][
+                "var6"] + "`;"
+        if "var7" in settings["variables"]:
+            sub["variables"] += "$ENV{var7} = `" + settings["variables"][
+                "var7"] + "`;"
+        if "var8" in settings["variables"]:
+            sub["variables"] += "$ENV{var8} = `" + settings["variables"][
+                "var8"] + "`;"
+        if "var9" in settings["variables"]:
+            sub["variables"] += "$ENV{var9} = `" + settings["variables"][
+                "var9"] + "`;"
+
     sub["base_task.input"] = settings["base_task"]["input"]
     sub["base_task.query"] = settings["base_task"].get("query", "")
     sub["base_task.preview"] = settings["base_task"].get("preview", "echo {}")
@@ -71,6 +101,7 @@ def main(args):
         sub["extra.before_fzf"] = "| tee '$temp_file' | $filter | cat -n"
 
     t = t.replace("${fzf}", sub["fzf"])
+    t = t.replace("${variables}", sub["variables"])
     t = t.replace("${base_task.input}", sub["base_task.input"])
     t = t.replace("${base_task.query}", sub["base_task.query"])
     t = t.replace("${base_task.preview}", sub["base_task.preview"])
@@ -142,6 +173,33 @@ def create_next_task(key, **props):
     out.append("        $query =~ s/\\${q}/$q/g;")
     out.append("        $query =~ s/\\${k}/$k/g;")
     out.append("        $query =~ s/\\${o}/$o/g;")
+    if "var1" in props:
+        out.append("        my $tmp_var = q" + props["var1"] + ";")
+        out.append("        $ENV{var1} = `$tmp_var`;")
+    if "var2" in props:
+        out.append("        my $tmp_var = q" + props["var2"] + ";")
+        out.append("        $ENV{var2} = `$tmp_var`;")
+    if "var3" in props:
+        out.append("        my $tmp_var = q" + props["var3"] + ";")
+        out.append("        $ENV{var3} = `$tmp_var`;")
+    if "var4" in props:
+        out.append("        my $tmp_var = q" + props["var4"] + ";")
+        out.append("        $ENV{var4} = `$tmp_var`;")
+    if "var5" in props:
+        out.append("        my $tmp_var = q" + props["var5"] + ";")
+        out.append("        $ENV{var5} = `$tmp_var`;")
+    if "var6" in props:
+        out.append("        my $tmp_var = q" + props["var6"] + ";")
+        out.append("        $ENV{var6} = `$tmp_var`;")
+    if "var7" in props:
+        out.append("        my $tmp_var = q" + props["var7"] + ";")
+        out.append("        $ENV{var7} = `$tmp_var`;")
+    if "var8" in props:
+        out.append("        my $tmp_var = q" + props["var8"] + ";")
+        out.append("        $ENV{var8} = `$tmp_var`;")
+    if "var9" in props:
+        out.append("        my $tmp_var = q" + props["var9"] + ";")
+        out.append("        $ENV{var9} = `$tmp_var`;")
     if "input" in props:
         out.append("        $input = q" + props["input"] + ";")
         out.append("        $input =~ s/\\${q}/$q/g;")

@@ -1,6 +1,8 @@
 fzf: /Users/hirano.shigetoshi/local/bin/fzf
+variables:
+    var1: date
 base_task:
-  input: echo ${1}
+  input: echo $var1
   opts:
     - multi
     - no-mouse
@@ -18,11 +20,12 @@ expects:
     stdout:
       nth: 1..-1
   ctrl-u:
-    pipe: cat
+    continue:
+        var1: echo $var1 | wc -l
   ctrl-t:
     continue:
       input: cat ${2}
-      query: aaa ${result:query}
+      query: aaa ${q}
       preview: cat creator.py
       opts:
         - ansi

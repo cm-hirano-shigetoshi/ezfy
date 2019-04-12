@@ -4,6 +4,8 @@ use warnings;
 
 my $fzf = "${fzf}";
 
+${variables}
+
 my $input = q${base_task.input};
 my $query = q${base_task.query};
 my $preview = q${base_task.preview};
