@@ -2,6 +2,8 @@
 use strict;
 use warnings;
 
+my $tmp = "";
+
 my $fzf = "${fzf}";
 
 ${variables}
