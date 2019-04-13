@@ -26,7 +26,7 @@ def main(args):
     if "variables" in settings:
         for var in settings["variables"]:
             sub["variables"] += "$tmp = q" + settings["variables"][var] + ";\n"
-            sub["variables"] += "$ENV{" + var + "} = `$tmp`;\n"
+            sub["variables"] += "($ENV{" + var + "} = `$tmp`) =~ s/\\n+$//;\n"
 
     sub["base_task.input"] = settings["base_task"]["input"]
     sub["base_task.query"] = settings["base_task"].get("query", "")
@@ -152,7 +152,7 @@ def create_next_task(key, **props):
     for var in props.keys():
         if len(var) == 4 and var.startswith("var"):
             out.append("        $tmp = q" + props["var1"] + ";")
-            out.append("        $ENV{var1} = `$tmp`;")
+            out.append("        ($ENV{var1} = `$tmp`) =~ s/\\n+$//;")
     if "input" in props:
         out.append("        $input = q" + props["input"] + ";")
         out.append("        $input =~ s/\\${q}/$q/g;")
