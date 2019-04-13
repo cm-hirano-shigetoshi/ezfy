@@ -24,7 +24,7 @@ expects:
         var1: echo $var1 | wc -l
   ctrl-t:
     continue:
-      input: cat ${2}
+      input: cat ${1}
       query: aaa ${q}
       preview: cat creator.py
       opts:
