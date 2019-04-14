@@ -8,7 +8,6 @@ my $fzf = "${fzf}";
 
 for (my $i=0; $i<=$#ARGV; $i++) {
     $ENV{"arg" . ($i+1)} = $ARGV[$i];
-    print STDERR "aaa";
 }
 ${variables}
 
