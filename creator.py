@@ -154,8 +154,8 @@ def create_next_task(key, **props):
     out.append("        $query =~ s/\\${o}/$o/g;")
     for var in props.keys():
         if len(var) == 4 and var.startswith("var"):
-            out.append("        $tmp = q" + props["var1"] + ";")
-            out.append("        ($ENV{var1} = `$tmp`) =~ s/\\n+$//;")
+            out.append("        $tmp = q" + props[var] + ";")
+            out.append("        ($ENV{" + var + "} = `$tmp`) =~ s/\\n+$//;")
     if "input" in props:
         out.append("        $input = q" + props["input"] + ";")
         out.append("        $input =~ s/\\${q}/$q/g;")
