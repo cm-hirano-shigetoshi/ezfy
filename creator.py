@@ -25,7 +25,10 @@ def main(args):
     sub["variables"] = ""
     if "variables" in settings:
         for var in settings["variables"]:
-            sub["variables"] += "$tmp = q" + settings["variables"][var] + ";\n"
+            init = ""
+            if settings["variables"][var] is not None:
+                init = settings["variables"][var]
+            sub["variables"] += "$tmp = q" + init + ";\n"
             sub["variables"] += "($ENV{" + var + "} = `$tmp`) =~ s/\\n+$//;\n"
 
     sub["base_task.input"] = settings["base_task"]["input"]
