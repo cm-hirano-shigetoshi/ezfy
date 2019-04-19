@@ -35,7 +35,7 @@ while (1) {
         $k = "select-1";
     }
 
-
+    my $pipe = "| cat";
     if (0) {
 ${expects.operation}
     } elsif ($k eq "ctrl-m" || $k eq "select-1") {
@@ -57,6 +57,25 @@ sub split_outputs {
     my @lines = split("\n", $_[0]);
     my ($q, $k, $o) = (shift(@lines), shift(@lines), $lines[$#lines]);
     return ($q, $k, $o, \@lines);
+}
+
+sub join_lines {
+    my @lines = join($_[1], @{$_[0]});
+    return \@lines;
+}
+
+sub put_prefix {
+    my @lines = map {
+        $_ = $_[1] . $_; $_;
+    } @{$_[0]};
+    return \@lines;
+}
+
+sub put_suffix {
+    my @lines = map {
+        $_ .= $_[1]; $_;
+    } @{$_[0]};
+    return \@lines;
 }
 
 sub nth {
@@ -94,31 +113,20 @@ sub nth {
     return \@return;
 }
 
-sub expand_home {
+sub filepath {
     my @lines = map {
-        s/^~/$ENV{HOME}/; $_;
+        s/^~/$ENV{HOME}/;
+        s/^(.*[ \["&()|`;<!].*)$/'$1'/;
+        $_;
     } @{$_[0]};
     return \@lines;
 }
 
 sub quotation {
-    if ($_[1] eq "") {
-      my @lines = map {
-          if (/'/) {
-              '"' . $_ . '"';
-          } elsif (/[ \["&()|`;<!]/) {
-              "'" . $_ . "'";
-          } else {
-              $_;
-          }
-      } @{$_[0]};
-      return \@lines;
-    } else {
-      my @lines = map {
-          $_[1] . $_ . $_[1];
-      } @{$_[0]};
-      return \@lines;
-    }
+    my @lines = map {
+        $_[1] . $_ . $_[1];
+    } @{$_[0]};
+    return \@lines;
 }
 
 sub line_select {

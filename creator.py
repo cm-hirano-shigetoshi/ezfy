@@ -43,32 +43,27 @@ def main(args):
     sub["expects.definition"] = "ctrl-m"
     sub["expects.operation"] = ""
     if "expects" in settings:
-        for key, ope in settings["expects"].items():
+        for key, operations in settings["expects"].items():
+            # key definition
             if key != "select-1":
                 sub["expects.definition"] += "," + key
             if key == "enter":
                 sub["expects.operation"] += "    } elsif ($k eq 'enter' || $k eq 'select-1') {\n"
             else:
                 sub["expects.operation"] += "    } elsif ($k eq '" + key + "') {\n"
-            if "stdout" in ope:
-                if ope["stdout"] is None:
-                    sub["expects.operation"] += create_stdout(**{})
-                else:
-                    sub["expects.operation"] += create_stdout(**ope["stdout"])
-            elif "line_select" in ope:
-                if ope["line_select"] is None:
-                    sub["expects.operation"] += create_line_select(**{})
-                else:
-                    sub["expects.operation"] += create_line_select(
-                        **ope["line_select"])
-            elif "pipe" in ope:
-                sub["expects.operation"] += create_pipe(ope["pipe"])
-            elif "line_select_pipe" in ope:
-                sub["expects.operation"] += create_line_select_pipe(
-                    ope["line_select_pipe"])
-            elif "continue" in ope:
+
+            # value definition
+            if "line_select" in operations:
+                sub["expects.operation"] += select_line_select()
+            if "pipe" in operations:
+                sub["expects.operation"] += create_pipe(operations["pipe"])
+            if "stdout" in operations:
+                sub["expects.operation"] += create_stdout(*operations["stdout"])
+            if "pipe" in operations or "stdout" in operations:
+                sub["expects.operation"] += create_print()
+            if "continue" in operations:
                 sub["expects.operation"] += create_next_task(
-                    key, **ope["continue"])
+                    key, **operations["continue"])
 
     sub["base_task.line_select.filter"] = ""
     sub["extra.declaration"] = ""
@@ -103,47 +98,50 @@ def get_binds(**binds):
     return "--bind='" + ",".join(out) + "'"
 
 
-def create_stdout(**opts):
+def create_stdout(*opts):
     out = []
-    if "nth" in opts:
-        delimiter = opts.get("delimiter", "\\s+")
-        out.append("        my $nth_delimiter = q" + delimiter + ";")
-        out.append("        $ref_outputs = &nth($ref_outputs, \"" +
-                   str(opts["nth"]) + "\", \"$nth_delimiter\");")
-    if "file" in opts:
-        out.append("        $ref_outputs = &expand_home($ref_outputs);")
-    if "quote" in opts:
-        quote = opts["quote"] if opts["quote"] is not None else ""
-        out.append("        my $quote = q" + quote + ";")
-        out.append("        $ref_outputs = &quotation($ref_outputs, $quote);")
-    joiner = "\n"
-    if "join" in opts:
-        joiner = opts["join"] if opts["join"] is not None else " "
-    out.append("        my $joiner = q" + joiner + ";")
-    out.append("        my $prefix = q" + opts.get("prefix", "") + ";")
-    out.append("        my $suffix = q" + opts.get("suffix", "") + ";")
-    out.append(
-        "        print $prefix . join($joiner, @{$ref_outputs}) . $suffix;")
+    delimiter = "\\s+"
+    joiner = " "
+    for opt in opts:
+        if "delimiter" in opt:
+            delimiter = opt["delimiter"]
+        elif "nth" in opt:
+            out.append("        my $nth_delimiter = q" + delimiter + ";")
+            out.append("        $ref_outputs = &nth($ref_outputs, \"" +
+                       str(opt["nth"]) + "\", \"$nth_delimiter\");")
+        elif "file" in opt:
+            out.append("        $ref_outputs = &filepath($ref_outputs);")
+        elif "quote" in opt:
+            out.append("        $ref_outputs = &quotation($ref_outputs, q" + opt["quote"] + ");")
+        elif "prefix" in opt:
+            out.append("        $ref_outputs = &put_prefix($ref_outputs, q" + opt["prefix"] + ");")
+        elif "suffix" in opt:
+            out.append("        $ref_outputs = &put_suffix($ref_outputs, q" + opt["suffix"] + ");")
+        elif "join" in opt:
+            if opt["join"] is not None:
+                joiner = opt
+            out.append("        $ref_outputs = &join_lines($ref_outputs, q" + joiner + ");")
     return "\n".join(out) + "\n"
 
 
 def create_pipe(cmd):
     out = []
-    out.append("        my $pipe = q| " + cmd + ";")
+    out.append("        $pipe = q| " + cmd + ";")
+    return "\n".join(out) + "\n"
+
+
+def create_print():
+    out = []
     out.append("        open(PIPE, $pipe);")
     out.append("        print PIPE join(\"\\n\", @{$ref_outputs});")
     out.append("        close(PIPE);")
     return "\n".join(out) + "\n"
 
 
-def create_line_select(**opts):
-    out = "        $ref_outputs = &line_select($temp_file, $ref_outputs);"
-    return out + "\n" + create_stdout(**opts)
-
-
-def create_line_select_pipe(cmd):
-    out = "        $ref_outputs = &line_select($temp_file, $ref_outputs);"
-    return out + "\n" + create_pipe(cmd)
+def select_line_select():
+    out = []
+    out.append("        $ref_outputs = &line_select($temp_file, $ref_outputs);")
+    return "\n".join(out) + "\n"
 
 
 def create_next_task(key, **props):

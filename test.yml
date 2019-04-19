@@ -16,20 +16,14 @@ binds:
   alt-p: toggle-preview
   alt-c: execute-silent(echo -n {} | pbcopy)
 expects:
-  ctrl-m:
+  enter:
     stdout:
-      nth: 1..-1
-  ctrl-u:
-    continue:
-        var1: echo $var1 | wc -l
-  ctrl-t:
-    continue:
-      input: cat ${1}
-      query: aaa ${q}
-      preview: cat creator.py
-      opts:
-        - ansi
-        - preview-window=up
-      opts-remove:
-        - multi
-
+      - nth: 4,1
+      - quote: "'"
+      - prefix: bbb
+      - suffix: aaa
+      - quote: '"'
+      - join:
+      - prefix: ccc
+      - suffix: ddd
+    pipe: cat -n
