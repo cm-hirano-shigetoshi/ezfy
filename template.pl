@@ -105,7 +105,9 @@ sub nth {
                     push(@one_line, $tokens[$i-1]);
                 }
             } else {
-                push(@one_line, $tokens[$_-1]);
+                if ($_ > 0) {
+                    push(@one_line, $tokens[$_-1]);
+                }
             }
         }
         push(@return, join($joiner, @one_line));
