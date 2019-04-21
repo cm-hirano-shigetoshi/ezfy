@@ -114,9 +114,13 @@ def create_stdout(*opts):
         elif "quote" in opt:
             out.append("        $ref_outputs = &quotation($ref_outputs, q" + opt["quote"] + ");")
         elif "prefix" in opt:
-            out.append("        $ref_outputs = &put_prefix($ref_outputs, q" + opt["prefix"] + ");")
+            out.append("        $tmp = q" + opt["prefix"] + ";")
+            out.append("        ($tmp = `echo $tmp`) =~ s/\\n+$//;")
+            out.append("        $ref_outputs = &put_prefix($ref_outputs, $tmp);")
         elif "suffix" in opt:
-            out.append("        $ref_outputs = &put_suffix($ref_outputs, q" + opt["suffix"] + ");")
+            out.append("        $tmp = q" + opt["prefix"] + ";")
+            out.append("        ($tmp = `echo $tmp`) =~ s/\\n+$//;")
+            out.append("        $ref_outputs = &put_suffix($ref_outputs, $tmp);")
         elif "join" in opt:
             if opt["join"] is not None:
                 joiner = opt
