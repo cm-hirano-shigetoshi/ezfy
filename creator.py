@@ -29,7 +29,7 @@ def main(args):
             if settings["variables"][var] is not None:
                 init = settings["variables"][var]
             sub["variables"] += "$tmp = q" + init + ";\n"
-            sub["variables"] += "($ENV{" + var + "} = `$tmp`) =~ s/\\n+$//;\n"
+            sub["variables"] += "($ENV{" + var + "} = `echo \"$tmp\"`) =~ s/\\n+$//;\n"
 
     sub["base_task.input"] = settings["base_task"]["input"]
     sub["base_task.query"] = settings["base_task"].get("query", "")
@@ -115,11 +115,11 @@ def create_stdout(*opts):
             out.append("        $ref_outputs = &quotation($ref_outputs, q" + opt["quote"] + ");")
         elif "prefix" in opt:
             out.append("        $tmp = q" + opt["prefix"] + ";")
-            out.append("        ($tmp = `echo $tmp`) =~ s/\\n+$//;")
+            out.append("        ($tmp = `echo \"$tmp\"`) =~ s/\\n+$//;")
             out.append("        $ref_outputs = &put_prefix($ref_outputs, $tmp);")
         elif "suffix" in opt:
             out.append("        $tmp = q" + opt["prefix"] + ";")
-            out.append("        ($tmp = `echo $tmp`) =~ s/\\n+$//;")
+            out.append("        ($tmp = `echo \"$tmp\"`) =~ s/\\n+$//;")
             out.append("        $ref_outputs = &put_suffix($ref_outputs, $tmp);")
         elif "join" in opt:
             if opt["join"] is not None:
@@ -160,7 +160,7 @@ def create_next_task(key, **props):
             out.append("        $tmp =~ s/\\${q}/$q/g;")
             out.append("        $tmp =~ s/\\${k}/$q/g;")
             out.append("        $tmp =~ s/\\${o}/$q/g;")
-            out.append("        ($ENV{" + var + "} = `$tmp`) =~ s/\\n+$//;")
+            out.append("        ($ENV{" + var + "} = `echo \"$tmp\"`) =~ s/\\n+$//;")
     if "input" in props:
         out.append("        $input = q" + props["input"] + ";")
         out.append("        $input =~ s/\\${q}/$q/g;")
