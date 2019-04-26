@@ -4,8 +4,8 @@ use warnings;
 
 my $tmp = "";
 
-my $fzf = "${fzf}";
-
+my $fzf = q${fzf};
+$ENV{"arg0"} = q${arg0};
 for (my $i=0; $i<=$#ARGV; $i++) {
     $ENV{"arg" . ($i+1)} = $ARGV[$i];
 }

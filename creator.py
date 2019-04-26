@@ -21,6 +21,7 @@ def main(args):
     sub = {}
 
     sub["fzf"] = settings.get("fzf", "fzf")
+    sub["arg0"] = yml
 
     sub["variables"] = ""
     if "variables" in settings:
@@ -58,7 +59,8 @@ def main(args):
             if "pipe" in operations:
                 sub["expects.operation"] += create_pipe(operations["pipe"])
             if "stdout" in operations:
-                sub["expects.operation"] += create_stdout(*operations["stdout"])
+                sub["expects.operation"] += create_stdout(
+                    *operations["stdout"])
             if "pipe" in operations or "stdout" in operations:
                 sub["expects.operation"] += create_print()
             if "continue" in operations:
@@ -75,6 +77,7 @@ def main(args):
         sub["extra.before_fzf"] = "| tee '$temp_file' | $filter | cat -n"
 
     t = t.replace("${fzf}", sub["fzf"])
+    t = t.replace("${arg0}", sub["arg0"])
     t = t.replace("${variables}", sub["variables"])
     t = t.replace("${base_task.input}", sub["base_task.input"])
     t = t.replace("${base_task.query}", sub["base_task.query"])
@@ -112,19 +115,23 @@ def create_stdout(*opts):
         elif "file" in opt:
             out.append("        $ref_outputs = &filepath($ref_outputs);")
         elif "quote" in opt:
-            out.append("        $ref_outputs = &quotation($ref_outputs, q" + opt["quote"] + ");")
+            out.append("        $ref_outputs = &quotation($ref_outputs, q" +
+                       opt["quote"] + ");")
         elif "prefix" in opt:
             out.append("        $tmp = q" + opt["prefix"] + ";")
             out.append("        ($tmp = `echo \"$tmp\"`) =~ s/\\n+$//;")
-            out.append("        $ref_outputs = &put_prefix($ref_outputs, $tmp);")
+            out.append(
+                "        $ref_outputs = &put_prefix($ref_outputs, $tmp);")
         elif "suffix" in opt:
             out.append("        $tmp = q" + opt["prefix"] + ";")
             out.append("        ($tmp = `echo \"$tmp\"`) =~ s/\\n+$//;")
-            out.append("        $ref_outputs = &put_suffix($ref_outputs, $tmp);")
+            out.append(
+                "        $ref_outputs = &put_suffix($ref_outputs, $tmp);")
         elif "join" in opt:
             if opt["join"] is not None:
                 joiner = opt
-            out.append("        $ref_outputs = &join_lines($ref_outputs, q" + joiner + ");")
+            out.append("        $ref_outputs = &join_lines($ref_outputs, q" +
+                       joiner + ");")
     return "\n".join(out) + "\n"
 
 
@@ -144,7 +151,8 @@ def create_print():
 
 def select_line_select():
     out = []
-    out.append("        $ref_outputs = &line_select($temp_file, $ref_outputs);")
+    out.append(
+        "        $ref_outputs = &line_select($temp_file, $ref_outputs);")
     return "\n".join(out) + "\n"
 
 
@@ -160,7 +168,8 @@ def create_next_task(key, **props):
             out.append("        $tmp =~ s/\\${q}/$q/g;")
             out.append("        $tmp =~ s/\\${k}/$q/g;")
             out.append("        $tmp =~ s/\\${o}/$q/g;")
-            out.append("        ($ENV{" + var + "} = `echo \"$tmp\"`) =~ s/\\n+$//;")
+            out.append("        ($ENV{" + var +
+                       "} = `echo \"$tmp\"`) =~ s/\\n+$//;")
     if "input" in props:
         out.append("        $input = q" + props["input"] + ";")
         out.append("        $input =~ s/\\${q}/$q/g;")
