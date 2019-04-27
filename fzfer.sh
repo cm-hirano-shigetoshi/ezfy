@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -eu
-readonly YAML=$1
-shift
+readonly SUBCMD=$1; shift
 
 function readlink_e() {
   local p
@@ -13,7 +12,16 @@ function readlink_e() {
   fi
   echo $p
 }
-
 readonly TOOLDIR=$(dirname $(readlink_e $0))
-perl <(python ${TOOLDIR}/creator.py ${TOOLDIR}/template.pl ${YAML} | tee ~/.debug) "$@"
+
+if [[ "${SUBCMD}" = "run" ]]; then
+  readonly YAML=$1; shift
+  perl <(python ${TOOLDIR}/creator.py ${TOOLDIR}/template.pl ${YAML}) "$@"
+elif [[ "${SUBCMD}" = "debug" ]]; then
+  readonly YAML=$1; shift
+  python ${TOOLDIR}/creator.py ${TOOLDIR}/template.pl ${YAML}
+elif [[ "${SUBCMD}" = "preview" ]]; then
+  readonly FILE=$1; shift
+  ${TOOLDIR}/preview/${FILE} "$@"
+fi
 
