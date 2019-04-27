@@ -14,7 +14,6 @@ function readlink_e() {
   echo $p
 }
 
-readonly PYTHON=/usr/bin/python
 readonly TOOLDIR=$(dirname $(readlink_e $0))
-perl <(${PYTHON} ${TOOLDIR}/creator.py ${TOOLDIR}/template.pl ${YAML} | tee ~/.debug) "$@"
+perl <(python ${TOOLDIR}/creator.py ${TOOLDIR}/template.pl ${YAML} | tee ~/.debug) "$@"
 

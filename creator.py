@@ -12,7 +12,7 @@ def main(args):
     # print(template)
 
     with open(yml) as file:
-        settings = yaml.load(file)
+        settings = yaml.load(file, Loader=yaml.SafeLoader)
     # print(settings)
 
     global base_opts
