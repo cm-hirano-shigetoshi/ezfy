@@ -13,16 +13,17 @@ function readlink_e() {
   fi
   echo $p
 }
+readonly PYTHON=/usr/local/bin/python
 readonly TOOLDIR=$(dirname $(readlink_e $0))
 
 if [[ "${SUBCMD}" = "run" ]]; then
   readonly YAML=$1
   shift
-  perl <(python ${TOOLDIR}/creator.py ${TOOLDIR}/template.pl ${YAML}) "$@"
+  perl <(${PYTHON} ${TOOLDIR}/creator.py ${TOOLDIR}/template.pl ${YAML}) "$@"
 elif [[ "${SUBCMD}" = "debug" ]]; then
   readonly YAML=$1
   shift
-  python ${TOOLDIR}/creator.py ${TOOLDIR}/template.pl ${YAML}
+  ${PYTHON} ${TOOLDIR}/creator.py ${TOOLDIR}/template.pl ${YAML}
 elif [[ "${SUBCMD}" = "preview" ]]; then
   readonly FILE=$1
   shift
