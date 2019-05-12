@@ -16,6 +16,8 @@ my $query = q${base_task.query};
 my $preview = q${base_task.preview};
 my $opts = q${base_task.opts};
 my $filter = q${base_task.line_select.filter};
+my $binds = q${binds};
+$binds =~ s/^(.+)$/--bind='$1'/;
 
 ${extra.declaration}
 
@@ -26,7 +28,7 @@ while (1) {
     $cmd .= " | SHELL=bash $fzf";
     $cmd .= " --print-query";
     $cmd .= " --expect='${expects.definition}'";
-    $cmd .= " ${binds}";
+    $cmd .= " $binds";
     $cmd .= " $opts";
     $cmd .= " --query=\"$query\"";
     $cmd .= " --preview='$preview'";

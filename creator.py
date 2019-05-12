@@ -98,7 +98,7 @@ def get_binds(**binds):
     out = []
     for k, v in binds.items():
         out.append(k + ":" + v)
-    return "--bind='" + ",".join(out) + "'"
+    return ",".join(out)
 
 
 def create_stdout(*opts):
