@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 
 readonly FILE=$1
 readonly LINE=$2
