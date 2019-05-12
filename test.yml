@@ -2,7 +2,7 @@ fzf: /Users/hirano.shigetoshi/local/bin/fzf
 variables:
     var1: cat ~/20190410.txt
 base_task:
-  input: cat /Users/hirano.shigetoshi/PublicRepository/fzfer/fzfer.sh
+  input: cat $yml
   opts:
     - multi
     - no-mouse

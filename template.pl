@@ -6,7 +6,8 @@ my $tmp = "";
 
 my $fzf = q${fzf};
 $ENV{"fzfer_dir"} = q${fzfer_dir};
-$ENV{"arg0"} = q${arg0};
+$ENV{"yml"} = q${yml};
+$ENV{"arg0"} = q${yml};
 for (my $i=0; $i<=$#ARGV; $i++) {
     $ENV{"arg" . ($i+1)} = $ARGV[$i];
 }

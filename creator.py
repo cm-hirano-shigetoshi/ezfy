@@ -24,7 +24,7 @@ def main(args):
     sub["fzf"] = settings.get("fzf", "fzf")
     sub["fzfer_dir"] = os.path.dirname(__file__)
 
-    sub["arg0"] = yml
+    sub["yml"] = yml
 
     sub["variables"] = ""
     if "variables" in settings:
@@ -81,7 +81,7 @@ def main(args):
 
     t = t.replace("${fzf}", sub["fzf"])
     t = t.replace("${fzfer_dir}", sub["fzfer_dir"])
-    t = t.replace("${arg0}", sub["arg0"])
+    t = t.replace("${yml}", sub["yml"])
     t = t.replace("${variables}", sub["variables"])
     t = t.replace("${base_task.input}", sub["base_task.input"])
     t = t.replace("${base_task.query}", sub["base_task.query"])
