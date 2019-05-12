@@ -33,12 +33,25 @@ while (1) {
     $cmd .= " --query=\"$query\"";
     $cmd .= " --preview='$preview'";
     my ($q, $k, $o, $ref_outputs) = &split_outputs(`$cmd`."");
-    if ($opts =~ /--select-1/ && $k eq "") {
-        $k = "select-1";
+    if ($k eq "") {
+        if (scalar(@{$ref_outputs}) == 1) {
+            $k = "select-1";
+        } elsif (scalar(@{$ref_outputs}) > 1) {
+            $k = "filter";
+        }
     }
 
     my $pipe = "| cat";
-    if (0) {
+    if ($k eq "filter") {
+        my $temp_file = &make_temp();
+        open(TEMP, ">", $temp_file);
+        foreach (@{$ref_outputs}) {
+            print TEMP "$_\n";
+        }
+        close(TEMP);
+        $input = "cat " . $temp_file;
+        $query = "";
+        next;
 ${expects.operation}
     } elsif ($k eq "ctrl-m" || $k eq "select-1") {
         print join("\n", @{$ref_outputs});

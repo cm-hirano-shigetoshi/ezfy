@@ -7,6 +7,7 @@ base_task:
     - multi
     - no-mouse
     - ansi
+    - select-1
   preview: echo preview={}
 binds:
   up: preview-up
@@ -15,6 +16,7 @@ binds:
   alt-j: preview-page-down
   alt-p: toggle-preview
   alt-c: execute-silent(echo -n {} | pbcopy)
+  alt-enter: filter
 expects:
   enter:
     stdout:
@@ -26,6 +28,4 @@ expects:
       - join:
       - prefix: ccc
       - suffix: ddd
-    pipe: cat -n
-  ctrl-g:
     pipe: cat -n

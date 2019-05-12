@@ -97,7 +97,10 @@ def main(args):
 def get_binds(**binds):
     out = []
     for k, v in binds.items():
-        out.append(k + ":" + v)
+        if v == "filter":
+            out.append(k + ":select-all+accept")
+        else:
+            out.append(k + ":" + v)
     return ",".join(out)
 
 
