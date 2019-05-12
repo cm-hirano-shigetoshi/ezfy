@@ -5,6 +5,7 @@ use warnings;
 my $tmp = "";
 
 my $fzf = q${fzf};
+$ENV{"fzfer_dir"} = q${fzfer_dir};
 $ENV{"arg0"} = q${arg0};
 for (my $i=0; $i<=$#ARGV; $i++) {
     $ENV{"arg" . ($i+1)} = $ARGV[$i];

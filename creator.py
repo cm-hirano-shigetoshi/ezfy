@@ -1,3 +1,4 @@
+import os
 import sys
 import yaml
 
@@ -21,6 +22,8 @@ def main(args):
     sub = {}
 
     sub["fzf"] = settings.get("fzf", "fzf")
+    sub["fzfer_dir"] = os.path.dirname(__file__)
+
     sub["arg0"] = yml
 
     sub["variables"] = ""
@@ -77,6 +80,7 @@ def main(args):
         sub["extra.before_fzf"] = "| tee '$temp_file' | $filter | cat -n"
 
     t = t.replace("${fzf}", sub["fzf"])
+    t = t.replace("${fzfer_dir}", sub["fzfer_dir"])
     t = t.replace("${arg0}", sub["arg0"])
     t = t.replace("${variables}", sub["variables"])
     t = t.replace("${base_task.input}", sub["base_task.input"])
