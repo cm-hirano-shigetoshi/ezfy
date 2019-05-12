@@ -48,7 +48,7 @@ ${expects.operation}
 }
 
 sub make_temp {
-    return `mktemp -t 'fzfer_line_select_xxxxxxxx`;
+    return `mktemp -t 'fzfer_line_select_XXXXXXXX' | xargs echo -n`;
 }
 
 sub split_outputs {

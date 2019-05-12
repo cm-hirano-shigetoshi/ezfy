@@ -123,7 +123,7 @@ def create_stdout(*opts):
             out.append(
                 "        $ref_outputs = &put_prefix($ref_outputs, $tmp);")
         elif "suffix" in opt:
-            out.append("        $tmp = q" + opt["prefix"] + ";")
+            out.append("        $tmp = q" + opt["suffix"] + ";")
             out.append("        ($tmp = `echo \"$tmp\"`) =~ s/\\n+$//;")
             out.append(
                 "        $ref_outputs = &put_suffix($ref_outputs, $tmp);")
