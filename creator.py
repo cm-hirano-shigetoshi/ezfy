@@ -196,7 +196,8 @@ def create_next_task(key, **props):
         opts = opts.union(set(props["opts"]))
     if "opts-remove" in props:
         opts = opts.difference(set(props["opts-remove"]))
-    out.append("        $opts = q--" + " --".join(opts) + ";")
+    if len(opts) > 0:
+        out.append("        $opts = q--" + " --".join(opts) + ";")
     out.append("        next;")
     return "\n".join(out) + "\n"
 
