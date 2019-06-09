@@ -165,28 +165,32 @@ def select_line_select():
 
 def create_next_task(key, **props):
     out = []
-    out.append("        $query = q" + props.get("query", "${q}") + ";")
-    out.append("        $query =~ s/\\${q}/$q/g;")
-    out.append("        $query =~ s/\\${k}/$k/g;")
-    out.append("        $query =~ s/\\${o}/$o/g;")
+    out.append("        my $condition = 'true';")
+    if "if" in props:
+        out.append("        $condition = q" + props['if'] + ";")
+    out.append("        if (system($condition) == 0) {")
+    out.append("            $query = q" + props.get("query", "${q}") + ";")
+    out.append("            $query =~ s/\\${q}/$q/g;")
+    out.append("            $query =~ s/\\${k}/$k/g;")
+    out.append("            $query =~ s/\\${o}/$o/g;")
     for var in props.keys():
         if len(var) == 4 and var.startswith("var"):
-            out.append("        $tmp = q" + props[var] + ";")
-            out.append("        $tmp =~ s/\\${q}/$q/g;")
-            out.append("        $tmp =~ s/\\${k}/$k/g;")
-            out.append("        $tmp =~ s/\\${o}/$o/g;")
-            out.append("        ($ENV{" + var +
+            out.append("            $tmp = q" + props[var] + ";")
+            out.append("            $tmp =~ s/\\${q}/$q/g;")
+            out.append("            $tmp =~ s/\\${k}/$k/g;")
+            out.append("            $tmp =~ s/\\${o}/$o/g;")
+            out.append("            ($ENV{" + var +
                        "} = `echo \"$tmp\"`) =~ s/\\n+$//;")
     if "input" in props:
-        out.append("        $input = q" + props["input"] + ";")
-        out.append("        $input =~ s/\\${q}/$q/g;")
-        out.append("        $input =~ s/\\${k}/$k/g;")
-        out.append("        $input =~ s/\\${o}/$o/g;")
+        out.append("            $input = q" + props["input"] + ";")
+        out.append("            $input =~ s/\\${q}/$q/g;")
+        out.append("            $input =~ s/\\${k}/$k/g;")
+        out.append("            $input =~ s/\\${o}/$o/g;")
     if "preview" in props:
-        out.append("        $preview = q" + props["preview"] + ";")
-        out.append("        $preview =~ s/\\${q}/$q/g;")
-        out.append("        $preview =~ s/\\${k}/$k/g;")
-        out.append("        $preview =~ s/\\${o}/$o/g;")
+        out.append("            $preview = q" + props["preview"] + ";")
+        out.append("            $preview =~ s/\\${q}/$q/g;")
+        out.append("            $preview =~ s/\\${k}/$k/g;")
+        out.append("            $preview =~ s/\\${o}/$o/g;")
 
     if "opts-clear" in props:
         opts = set()
@@ -197,8 +201,9 @@ def create_next_task(key, **props):
     if "opts-remove" in props:
         opts = opts.difference(set(props["opts-remove"]))
     if len(opts) > 0:
-        out.append("        $opts = q--" + " --".join(opts) + ";")
-    out.append("        next;")
+        out.append("            $opts = q--" + " --".join(opts) + ";")
+    out.append("            next;")
+    out.append("        }")
     return "\n".join(out) + "\n"
 
 
