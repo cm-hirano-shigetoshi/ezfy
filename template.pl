@@ -53,6 +53,7 @@ while (1) {
         close(TEMP);
         $input = "cat " . $temp_file;
         $query = "";
+        $opts =~ s/--nth=\S+//g;
         next;
 ${expects.operation}
     } elsif ($k eq "ctrl-m" || $k eq "select-1") {
