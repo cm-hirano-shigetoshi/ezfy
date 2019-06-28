@@ -1,0 +1,12 @@
+base_task:
+    input: grep -R '.' .
+    opts:
+        - multi
+        - delimiter=':'
+binds:
+    alt-enter: filter
+expects:
+    ctrl-s:
+        continue:
+            opts:
+                - nth=1
