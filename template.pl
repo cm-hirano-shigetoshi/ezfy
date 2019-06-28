@@ -5,7 +5,7 @@ use warnings;
 my $tmp = "";
 
 my $fzf = q${fzf};
-$ENV{"fzfer_dir"} = q${fzfer_dir};
+$ENV{"fzfyml_dir"} = q${fzfyml_dir};
 $ENV{"yml"} = q${yml};
 $ENV{"arg0"} = q${yml};
 for (my $i=0; $i<=$#ARGV; $i++) {
@@ -64,7 +64,7 @@ ${expects.operation}
 }
 
 sub make_temp {
-    return `mktemp -t 'fzfer_line_select_XXXXXXXX' | xargs echo -n`;
+    return `mktemp -t 'fzfyml_line_select_XXXXXXXX' | xargs echo -n`;
 }
 
 sub split_outputs {

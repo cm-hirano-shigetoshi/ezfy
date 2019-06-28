@@ -22,7 +22,7 @@ def main(args):
     sub = {}
 
     sub["fzf"] = settings.get("fzf", "fzf")
-    sub["fzfer_dir"] = os.path.dirname(__file__)
+    sub["fzfyml_dir"] = os.path.dirname(__file__)
 
     sub["yml"] = yml
 
@@ -76,11 +76,11 @@ def main(args):
     if "line_select" in settings["base_task"]:
         sub["base_task.line_select.filter"] = settings["base_task"][
             "line_select"].get("filter", "cat")
-        sub["extra.declaration"] = "my $temp_file = `mktemp -t 'fzfer_line_select_XXXXXXXX'`;"
+        sub["extra.declaration"] = "my $temp_file = `mktemp -t 'fzfyml_line_select_XXXXXXXX'`;"
         sub["extra.before_fzf"] = "| tee '$temp_file' | $filter | cat -n"
 
     t = t.replace("${fzf}", sub["fzf"])
-    t = t.replace("${fzfer_dir}", sub["fzfer_dir"])
+    t = t.replace("${fzfyml_dir}", sub["fzfyml_dir"])
     t = t.replace("${yml}", sub["yml"])
     t = t.replace("${variables}", sub["variables"])
     t = t.replace("${base_task.input}", sub["base_task.input"])
