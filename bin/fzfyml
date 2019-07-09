@@ -13,7 +13,7 @@ function readlink_e() {
   fi
   echo $p
 }
-readonly PYTHON=/usr/local/bin/python
+readonly PYTHON=python
 readonly TOOLDIR=$(dirname $(dirname $(readlink_e ${0})))
 
 if [[ "${SUBCMD}" = "run" ]]; then
