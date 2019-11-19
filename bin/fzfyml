@@ -3,18 +3,8 @@ set -eu
 readonly SUBCMD=$1
 shift
 
-function readlink_e() {
-  local p
-  if ! p=$(readlink -e "$1" 2>/dev/null); then
-    p="$1"
-    while [[ -L "$p" ]]; do
-      p=$(readlink "$p")
-    done
-  fi
-  echo $p
-}
 readonly PYTHON=python
-readonly TOOLDIR=$(dirname $(dirname $(readlink_e ${0})))
+readonly TOOLDIR=$(dirname $(dirname $(perl -MCwd=realpath -le 'print realpath shift' ${0})))
 
 if [[ "${SUBCMD}" = "run" ]]; then
   readonly YAML=$1
