@@ -11,11 +11,14 @@ class Stdout():
         return list(self.__yml.keys())
 
     def write(self, key, content):
-        for ope_dict in self.__yml[key]:
-            for ope, command in ope_dict.items():
-                if ope == 'pipe':
-                    content = Stdout.pipe(content, command)
-        print(re.sub('\n$', '', content))
+        if key == 'enter' and key not in self.__yml:
+            print(re.sub('\n$', '', content))
+        else:
+            for ope_dict in self.__yml[key]:
+                for ope, command in ope_dict.items():
+                    if ope == 'pipe':
+                        content = Stdout.pipe(content, command)
+            print(re.sub('\n$', '', content))
 
     def pipe(input_text, command):
         proc = subprocess.run(

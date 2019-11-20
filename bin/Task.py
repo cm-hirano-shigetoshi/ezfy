@@ -4,12 +4,12 @@ from Stdout import Stdout
 
 
 class Task():
-    def __init__(self, yml, continue_expect=[]):
+    def __init__(self, yml, continue_expect):
         self.__yml = yml
         self.__input = yml['input']
         self.__fzf = yml.get('fzf', 'fzf')
         self.__opts = Opts(yml.get('opts', []))
-        self.__preview = yml.get('preview' '')
+        self.__preview = yml.get('preview', '')
         self.__bind = Bind(yml.get('bind', {}))
         self.__stdout = Stdout(yml.get('stdout', {}))
         self.__continue_expect = continue_expect
@@ -24,10 +24,17 @@ class Task():
         return self.__opts.to_string()
 
     def __get_preview(self):
-        return '--preview="{}"'.format(self.__preview)
+        if len(self.__preview) > 0:
+            return '--preview="{}"'.format(self.__preview)
+        else:
+            return ''
 
     def __get_bind(self):
-        return '--bind="{}"'.format(self.__bind.to_string())
+        bind = self.__bind.to_string()
+        if len(bind) > 0:
+            return '--bind="{}"'.format(self.__bind.to_string())
+        else:
+            return ''
 
     def __set_input(self, continue_dict):
         if 'input' in continue_dict:
@@ -50,8 +57,10 @@ class Task():
             self.__stdout.set(continue_dict['stdout'])
 
     def __get_expect(self):
-        expects = ','.join(self.__continue_expect + self.__stdout.get_expect())
-        return '--expect="{}"'.format(expects)
+        expects = self.__continue_expect + self.__stdout.get_expect()
+        if 'enter' not in expects:
+            expects.append('enter')
+        return '--expect="{}"'.format(','.join(expects))
 
     def __get_fzf_options(self):
         return '{} {} {} {}'.format(self.__get_opts(), self.__get_preview(),
@@ -72,7 +81,7 @@ class Task():
         return key in self.__continue_expect
 
     def create_continue_task(self, continue_dict):
-        new_task = Task(self.__yml)
+        new_task = Task(self.__yml, self.__continue_expect)
         new_task.__set_input(continue_dict)
         new_task.__set_opts(continue_dict)
         new_task.__set_preview(continue_dict)

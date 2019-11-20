@@ -22,6 +22,9 @@ if sys.argv[1] == 'run':
             next_task = next_tasks.get(result.split('\n')[1])
             task = base_task.create_continue_task(next_task)
 elif sys.argv[1] == 'debug':
-    print(base_task.get_cmd())
+    if len(sys.argv) > 3:
+        next_task = next_tasks.get(sys.argv[3])
+        task = task.create_continue_task(next_task)
+    print(task.get_cmd())
 else:
     raise ValueError("")
