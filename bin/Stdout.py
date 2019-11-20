@@ -2,6 +2,7 @@ import re
 import subprocess
 from subprocess import PIPE
 
+
 class Stdout():
     def __init__(self, yml):
         self.__yml = yml
@@ -17,9 +18,9 @@ class Stdout():
         print(re.sub('\n$', '', content))
 
     def pipe(input_text, command):
-        proc = subprocess.run(command, shell=True, input=input_text, stdout=PIPE, text=True)
+        proc = subprocess.run(
+            command, shell=True, input=input_text, stdout=PIPE, text=True)
         return proc.stdout
 
     def set(self, stdout):
         self.__yml = stdout
-

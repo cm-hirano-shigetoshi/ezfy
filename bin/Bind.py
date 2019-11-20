@@ -18,4 +18,3 @@ class Bind():
     def set(self, binds):
         for key, command in binds.items():
             self.__binds[key] = self.__split_commands(command)
-

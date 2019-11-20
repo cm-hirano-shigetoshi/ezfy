@@ -1,4 +1,3 @@
-import re
 import sys
 import yaml
 from Task import Task
@@ -26,4 +25,3 @@ elif sys.argv[1] == 'debug':
     print(base_task.get_cmd())
 else:
     raise ValueError("")
-

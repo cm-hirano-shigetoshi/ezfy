@@ -1,10 +1,6 @@
-import re
 from Opts import Opts
 from Bind import Bind
 from Stdout import Stdout
-import subprocess
-from subprocess import PIPE
-
 
 
 class Task():
@@ -53,16 +49,17 @@ class Task():
         if 'stdout' in continue_dict:
             self.__stdout.set(continue_dict['stdout'])
 
-
     def __get_expect(self):
         expects = ','.join(self.__continue_expect + self.__stdout.get_expect())
         return '--expect="{}"'.format(expects)
 
     def __get_fzf_options(self):
-        return '{} {} {} {}'.format(self.__get_opts(), self.__get_preview(), self.__get_bind(), self.__get_expect())
+        return '{} {} {} {}'.format(self.__get_opts(), self.__get_preview(),
+                                    self.__get_bind(), self.__get_expect())
 
     def get_cmd(self):
-        cmd = '{} | {} {}'.format(self.__get_input(), self.__get_fzf_app(), self.__get_fzf_options())
+        cmd = '{} | {} {}'.format(self.__get_input(), self.__get_fzf_app(),
+                                  self.__get_fzf_options())
         return cmd
 
     def stdout(self, result):
@@ -82,4 +79,3 @@ class Task():
         new_task.__set_bind(continue_dict)
         new_task.__set_stdout(continue_dict)
         return new_task
-
