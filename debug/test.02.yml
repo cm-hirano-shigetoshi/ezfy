@@ -1,0 +1,14 @@
+base_task:
+  input: cat ~/xxdr.pl | cat -n
+  opts:
+    - multi
+  preview: echo preview={}
+  binds:
+    alt-p: toggle-preview
+  stdout:
+    enter:
+      - pipe: cat -n
+continue:
+  ctrl-r:
+    input: pwd
+
