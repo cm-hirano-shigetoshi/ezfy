@@ -19,3 +19,7 @@ class Stdout():
     def pipe(input_text, command):
         proc = subprocess.run(command, shell=True, input=input_text, stdout=PIPE, text=True)
         return proc.stdout
+
+    def set(self, stdout):
+        self.__yml = stdout
+

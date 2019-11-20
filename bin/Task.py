@@ -8,16 +8,15 @@ from subprocess import PIPE
 
 
 class Task():
-    def __init__(self, yml, expect):
+    def __init__(self, yml, continue_expect=[]):
+        self.__yml = yml
         self.__input = yml['input']
         self.__fzf = yml.get('fzf', 'fzf')
         self.__opts = Opts(yml.get('opts', []))
         self.__preview = yml.get('preview' '')
         self.__bind = Bind(yml.get('bind', {}))
         self.__stdout = Stdout(yml.get('stdout', {}))
-        self.__expect = expect
-        self.__expect.extend(self.__stdout.get_expect())
-
+        self.__continue_expect = continue_expect
 
     def __get_input(self):
         return self.__input
@@ -34,8 +33,30 @@ class Task():
     def __get_bind(self):
         return '--bind="{}"'.format(self.__bind.to_string())
 
+    def __set_input(self, continue_dict):
+        if 'input' in continue_dict:
+            self.__input = continue_dict['input']
+
+    def __set_opts(self, continue_dict):
+        if 'opts' in continue_dict:
+            self.__opts.set(continue_dict['opts'])
+
+    def __set_preview(self, continue_dict):
+        if 'preview' in continue_dict:
+            self.__preview = continue_dict['preview']
+
+    def __set_bind(self, continue_dict):
+        if 'bind' in continue_dict:
+            self.__bind.set(continue_dict['bind'])
+
+    def __set_stdout(self, continue_dict):
+        if 'stdout' in continue_dict:
+            self.__stdout.set(continue_dict['stdout'])
+
+
     def __get_expect(self):
-        return '--expect="{}"'.format(','.join(self.__expect))
+        expects = ','.join(self.__continue_expect + self.__stdout.get_expect())
+        return '--expect="{}"'.format(expects)
 
     def __get_fzf_options(self):
         return '{} {} {} {}'.format(self.__get_opts(), self.__get_preview(), self.__get_bind(), self.__get_expect())
@@ -49,16 +70,16 @@ class Task():
         content = '\n'.join(result.split('\n')[2:])
         self.__stdout.write(key, content)
 
-#    def create_continue_task(self, key):
-#        new_task = Task(self.__yml)
-#        operations = self.__expects.get_operation(key)
-#
-#    def is_loop_end(self, result):
-#        return True
-#        key = result.split('\n')[1]
-#        return 'continue' not in self.__expects.get_operation(key)
-#
-#    def format_output_string(result):
-#        stdout = '\n'.join(result.split('\n')[2:])
-#        return re.sub('\n$', '', stdout)
+    def is_continue(self, result):
+        key = result.split('\n')[1]
+        return key in self.__continue_expect
+
+    def create_continue_task(self, continue_dict):
+        new_task = Task(self.__yml)
+        new_task.__set_input(continue_dict)
+        new_task.__set_opts(continue_dict)
+        new_task.__set_preview(continue_dict)
+        new_task.__set_bind(continue_dict)
+        new_task.__set_stdout(continue_dict)
+        return new_task
 

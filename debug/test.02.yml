@@ -1,7 +1,7 @@
 base_task:
   input: cat ~/xxdr.pl | cat -n
   opts:
-    - multi
+    - no-multi
   preview: echo preview={}
   bind:
     alt-p: toggle-preview
@@ -10,5 +10,12 @@ base_task:
       - pipe: cat -n
 continue:
   ctrl-r:
-    input: pwd
+    input: cat ~/xxdr.pl
+    opts:
+    - multi
+    bind:
+      alt-p: select-all
+    stdout:
+      enter:
+      - pipe: sed 's/^/XXXX/'
 

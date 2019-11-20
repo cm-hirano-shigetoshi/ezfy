@@ -15,3 +15,10 @@ class Opts():
             else:
                 opts_array.append('--no-{}'.format(opt))
         return ' '.join(opts_array)
+
+    def set(self, opts):
+        for opt in opts:
+            if opt.startswith('no-'):
+                self.__opts[opt[3:]] = False
+            else:
+                self.__opts[opt] = True

@@ -15,3 +15,7 @@ class Bind():
             binds_array.append('{}:{}'.format(key, '+'.join(commands)))
         return ','.join(binds_array)
 
+    def set(self, binds):
+        for key, command in binds.items():
+            self.__binds[key] = self.__split_commands(command)
+
