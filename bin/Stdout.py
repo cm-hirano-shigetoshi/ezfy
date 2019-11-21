@@ -5,16 +5,17 @@ from subprocess import PIPE
 
 class Stdout():
     def __init__(self, stdout):
+        self.__stdout = {}
         self.set(stdout)
 
     def get_expect(self):
-        return list(self.__yml.keys())
+        return list(self.__stdout.keys())
 
     def write(self, key, content):
-        if key == 'enter' and key not in self.__yml:
+        if key == 'enter' and key not in self.__stdout:
             print(re.sub('\n$', '', content))
         else:
-            for ope_dict in self.__yml[key]:
+            for ope_dict in self.__stdout[key]:
                 for ope, command in ope_dict.items():
                     if ope == 'pipe':
                         content = Stdout.pipe(content, command)
@@ -26,4 +27,4 @@ class Stdout():
         return proc.stdout
 
     def set(self, stdout):
-        self.__yml = stdout
+        self.__stdout = stdout

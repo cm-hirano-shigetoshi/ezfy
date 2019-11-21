@@ -3,13 +3,15 @@ import sys
 import yaml
 from Task import Task
 from Continue import Continue
+from Variables import Variables
 import subprocess
 from subprocess import PIPE
 
 with open(sys.argv[2]) as f:
     yml = yaml.load(f, Loader=yaml.SafeLoader)
+variables = Variables(sys.argv)
 next_tasks = Continue(yml.get('continue', {}))
-base_task = Task(yml['base_task'], next_tasks.get_expect())
+base_task = Task(yml['base_task'], variables, next_tasks.get_expect())
 task = base_task
 
 if sys.argv[1] == 'run':
@@ -27,7 +29,7 @@ if sys.argv[1] == 'run':
             break
 elif sys.argv[1] == 'debug':
     if len(sys.argv) > 3:
-        next_task = next_tasks.get(sys.argv[3])
+        next_task = next_tasks.get(sys.argv[-1])
         task = task.create_continue_task(next_task)
     print(task.get_cmd())
 else:

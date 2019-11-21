@@ -5,5 +5,8 @@ class Continue():
     def get_expect(self):
         return list(self.__continues.keys())
 
-    def get(self, key):
-        return self.__continues[key]
+    def get(self, key, default={}):
+        if key in self.__continues:
+            return self.__continues[key]
+        else:
+            return default
