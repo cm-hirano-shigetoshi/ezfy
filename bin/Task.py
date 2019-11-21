@@ -6,19 +6,19 @@ from Stdout import Stdout
 class Task():
     def __init__(self, yml, continue_expect):
         self.__yml = yml
-        self.__input = yml['input']
-        self.__fzf = yml.get('fzf', 'fzf')
-        self.__opts = Opts(yml.get('opts', []))
-        self.__preview = yml.get('preview', '')
-        self.__bind = Bind(yml.get('bind', {}))
-        self.__stdout = Stdout(yml.get('stdout', {}))
+        self.__set_input(yml['input'])
+        self.__preview = ''
+        self.__set_preview(yml.get('preview', ''))
+        self.__opts = None
+        self.__set_opts(yml.get('opts', []))
+        self.__bind = None
+        self.__set_bind(yml.get('bind', {}))
+        self.__stdout = None
+        self.__set_stdout(yml.get('stdout', {}))
         self.__continue_expect = continue_expect
 
     def __get_input(self):
         return self.__input
-
-    def __get_fzf_app(self):
-        return self.__fzf
 
     def __get_opts(self):
         return self.__opts.to_string()
@@ -36,25 +36,33 @@ class Task():
         else:
             return ''
 
-    def __set_input(self, continue_dict):
-        if 'input' in continue_dict:
-            self.__input = continue_dict['input']
+    def __set_input(self, input):
+        if len(input) > 0:
+            self.__input = input
 
-    def __set_opts(self, continue_dict):
-        if 'opts' in continue_dict:
-            self.__opts.set(continue_dict['opts'])
+    def __set_opts(self, opts):
+        if len(opts) > 0:
+            if self.__opts is None:
+                self.__opts = Opts(opts)
+            else:
+                self.__opts.set(opts)
 
-    def __set_preview(self, continue_dict):
-        if 'preview' in continue_dict:
-            self.__preview = continue_dict['preview']
+    def __set_preview(self, preview):
+        self.__preview = preview
 
-    def __set_bind(self, continue_dict):
-        if 'bind' in continue_dict:
-            self.__bind.set(continue_dict['bind'])
+    def __set_bind(self, bind):
+        if len(bind) > 0:
+            if self.__bind is None:
+                self.__bind = Bind(bind)
+            else:
+                self.__bind.set(bind)
 
-    def __set_stdout(self, continue_dict):
-        if 'stdout' in continue_dict:
-            self.__stdout.set(continue_dict['stdout'])
+    def __set_stdout(self, stdout):
+        if len(stdout) > 0:
+            if self.__stdout is None:
+                self.__stdout = Stdout(stdout)
+            else:
+                self.__stdout.set(stdout)
 
     def __get_expect(self):
         expects = self.__continue_expect + self.__stdout.get_expect()
@@ -67,8 +75,7 @@ class Task():
                                     self.__get_bind(), self.__get_expect())
 
     def get_cmd(self):
-        cmd = '{} | {} {}'.format(self.__get_input(), self.__get_fzf_app(),
-                                  self.__get_fzf_options())
+        cmd = '{} | fzf {}'.format(self.__get_input(), self.__get_fzf_options())
         return cmd
 
     def stdout(self, result):
@@ -82,9 +89,9 @@ class Task():
 
     def create_continue_task(self, continue_dict):
         new_task = Task(self.__yml, self.__continue_expect)
-        new_task.__set_input(continue_dict)
-        new_task.__set_opts(continue_dict)
-        new_task.__set_preview(continue_dict)
-        new_task.__set_bind(continue_dict)
-        new_task.__set_stdout(continue_dict)
+        new_task.__set_input(continue_dict.get('input', ''))
+        new_task.__set_opts(continue_dict.get('opts', []))
+        new_task.__set_preview(continue_dict.get('preview', ''))
+        new_task.__set_bind(continue_dict.get('bind', {}))
+        new_task.__set_stdout(continue_dict.get('stdout', {}))
         return new_task

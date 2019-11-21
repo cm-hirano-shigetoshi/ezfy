@@ -4,8 +4,8 @@ from subprocess import PIPE
 
 
 class Stdout():
-    def __init__(self, yml):
-        self.__yml = yml
+    def __init__(self, stdout):
+        self.set(stdout)
 
     def get_expect(self):
         return list(self.__yml.keys())

@@ -1,11 +1,7 @@
 class Opts():
     def __init__(self, opts):
-        self.__opts = {'print-query': True}
-        for opt in opts:
-            if opt.startswith('no-'):
-                self.__opts[opt[3:]] = False
-            else:
-                self.__opts[opt] = True
+        self.__opts = {}
+        self.set(opts)
 
     def to_string(self):
         opts_array = []
@@ -22,3 +18,4 @@ class Opts():
                 self.__opts[opt[3:]] = False
             else:
                 self.__opts[opt] = True
+        self.__opts['print-query'] = True
