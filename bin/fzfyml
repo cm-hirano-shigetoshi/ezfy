@@ -10,7 +10,7 @@ from subprocess import PIPE
 with open(sys.argv[2]) as f:
     yml = yaml.load(f, Loader=yaml.SafeLoader)
 variables = Variables(sys.argv)
-next_tasks = Continue(yml.get('continue', {}))
+next_tasks = Continue(yml.get('continue', {}), variables)
 base_task = Task(yml['base_task'], variables, next_tasks.get_expect())
 task = base_task
 
@@ -24,6 +24,7 @@ if sys.argv[1] == 'run':
                 break
             else:
                 next_task = next_tasks.get(result.split('\n')[1])
+                variables.set_pre(result)
                 task = base_task.create_continue_task(next_task)
         else:
             break

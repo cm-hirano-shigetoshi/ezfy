@@ -1,6 +1,7 @@
 class Opts():
-    def __init__(self, opts):
+    def __init__(self, opts, variables):
         self.__opts = {}
+        self.__variables = variables
         self.set(opts)
 
     def to_string(self):

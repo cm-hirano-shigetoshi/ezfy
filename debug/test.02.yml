@@ -7,7 +7,7 @@ base_task:
       - pipe: cat -n
 continue:
   ctrl-r:
-    input: cat ~/xxdr.pl
+    input: echo '{pre_content}'
     opts:
     - multi
     bind:

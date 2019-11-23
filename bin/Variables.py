@@ -4,10 +4,14 @@ class Variables():
         self.__subcmd = args[1]
         self.__yml = args[2]
         self.__args = args[3:]
+        self.__pre_query = ""
+        self.__pre_key = ""
+        self.__pre_content = ""
 
     def expand(self, text):
         text = self.expand_tool_vars(text)
         text = self.expand_args(text)
+        text = self.expand_pre(text)
         return text
 
     def expand_tool_vars(self, text):
@@ -21,3 +25,13 @@ class Variables():
             text = text.replace('$arg{}'.format(str(i+1)), self.__args[i])
         return text
 
+    def expand_pre(self, text):
+        text = text.replace('{pre_query}', self.__pre_query)
+        text = text.replace('{pre_key}', self.__pre_key)
+        text = text.replace('{pre_content}', self.__pre_content)
+        return text
+
+    def set_pre(self, result):
+        self.__pre_query = result.split('\n')[0]
+        self.__pre_key = result.split('\n')[1]
+        self.__pre_content = '\n'.join(result.split('\n')[2:])

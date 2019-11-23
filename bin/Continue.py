@@ -1,6 +1,7 @@
 class Continue():
-    def __init__(self, continues):
+    def __init__(self, continues, variables):
         self.__continues = continues
+        self.__variables = variables
 
     def get_expect(self):
         return list(self.__continues.keys())

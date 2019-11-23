@@ -4,8 +4,9 @@ from subprocess import PIPE
 
 
 class Stdout():
-    def __init__(self, stdout):
+    def __init__(self, stdout, variables):
         self.__stdout = {}
+        self.__variables = variables
         self.set(stdout)
 
     def get_expect(self):
@@ -18,6 +19,7 @@ class Stdout():
             for ope_dict in self.__stdout[key]:
                 for ope, command in ope_dict.items():
                     if ope == 'pipe':
+                        command = self.__variables.expand(command)
                         content = Stdout.pipe(content, command)
             print(re.sub('\n$', '', content))
 

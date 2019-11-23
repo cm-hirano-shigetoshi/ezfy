@@ -6,12 +6,12 @@ from Stdout import Stdout
 class Task():
     def __init__(self, yml, variables, continue_expect):
         self.__yml = yml
+        self.__variables = variables
         self.__set_input(yml['input'])
         self.__preview = yml.get('preview', '')
-        self.__opts = Opts(yml.get('opts', []))
-        self.__bind = Bind(yml.get('bind', {}))
-        self.__stdout = Stdout(yml.get('stdout', {}))
-        self.__variables = variables
+        self.__opts = Opts(yml.get('opts', []), variables)
+        self.__bind = Bind(yml.get('bind', {}), variables)
+        self.__stdout = Stdout(yml.get('stdout', {}), variables)
         self.__continue_expect = continue_expect
 
     def __get_input(self):
