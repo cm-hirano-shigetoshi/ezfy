@@ -1,3 +1,6 @@
+import os
+
+
 class Variables():
     def __init__(self, args):
         self.__pyscript = args[0]
@@ -15,14 +18,16 @@ class Variables():
         return text
 
     def expand_tool_vars(self, text):
-        text = text.replace('$yml', self.__yml)
+        text = text.replace('{ymldir}', os.path.dirname(self.__yml))
+        text = text.replace('{yml}', self.__yml)
         return text
 
     def expand_args(self, text):
         for i in range(9):
             if i >= len(self.__args):
                 break
-            text = text.replace('$arg{}'.format(str(i+1)), self.__args[i])
+            text = text.replace('{' + 'arg{}'.format(str(i + 1)) + '}',
+                                self.__args[i])
         return text
 
     def expand_pre(self, text):
