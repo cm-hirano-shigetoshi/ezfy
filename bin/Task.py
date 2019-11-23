@@ -8,8 +8,9 @@ class Task():
         self.__yml = yml
         self.__variables = variables
         self.__set_input(yml['input'])
-        self.__preview = yml.get('preview', '')
         self.__opts = Opts(yml.get('opts', []), variables)
+        self.__query = yml.get('query', '')
+        self.__preview = yml.get('preview', '')
         self.__bind = Bind(yml.get('bind', {}), variables)
         self.__stdout = Stdout(yml.get('stdout', {}), variables)
         self.__continue_expect = continue_expect
@@ -27,6 +28,13 @@ class Task():
         else:
             return ''
 
+    def __get_query(self):
+        if len(self.__query) > 0:
+            expanded = self.__variables.expand(self.__query)
+            return '--query="{}"'.format(expanded)
+        else:
+            return ''
+
     def __get_bind(self):
         bind = self.__bind.to_string()
         if len(bind) > 0:
@@ -39,6 +47,9 @@ class Task():
 
     def __set_opts(self, opts):
         self.__opts.set(opts)
+
+    def __set_query(self, query):
+        self.__query = query
 
     def __set_preview(self, preview):
         self.__preview = preview
@@ -56,7 +67,7 @@ class Task():
         return '--expect="{}"'.format(','.join(expects))
 
     def __get_fzf_options(self):
-        return '{} {} {} {}'.format(self.__get_opts(), self.__get_preview(),
+        return '{} {} {} {} {}'.format(self.__get_opts(), self.__get_query(), self.__get_preview(),
                                     self.__get_bind(), self.__get_expect())
 
     def get_cmd(self):
@@ -78,6 +89,10 @@ class Task():
             new_task.__set_input(continue_dict['input'])
         if 'opts' in continue_dict:
             new_task.__set_opts(continue_dict['opts'])
+        if 'query' in continue_dict:
+            new_task.__set_query(continue_dict['query'])
+        else:
+            new_task.__set_query('{pre_query}')
         if 'preview' in continue_dict:
             new_task.__set_preview(continue_dict['preview'])
         if 'bind' in continue_dict:
