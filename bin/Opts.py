@@ -11,6 +11,7 @@ class Opts():
                 opts_array.append('--{}'.format(opt))
             else:
                 opts_array.append('--no-{}'.format(opt))
+        opts_array = list(map(lambda o: self.__variables.expand(o), opts_array))
         return ' '.join(opts_array)
 
     def set(self, opts):
