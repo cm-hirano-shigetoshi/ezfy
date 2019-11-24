@@ -1,10 +1,12 @@
 base_task:
-  input: cat ~/xxdr.pl | cat -n
+  input: cat -n ~/xxdr.pl
+  transform:
+      - pipe: awk '{print $1}'
   opts:
   - no-multi
   stdout:
       enter:
-      - pipe: cat -n
+      - before-transformed:
 continue:
   ctrl-r:
     input: echo '{pre_content}'

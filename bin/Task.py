@@ -1,6 +1,7 @@
 from Opts import Opts
 from Bind import Bind
 from Stdout import Stdout
+from Transform import Transform
 
 
 class Task():
@@ -8,6 +9,7 @@ class Task():
         self.__yml = yml
         self.__variables = variables
         self.__set_input(yml['input'])
+        self.__transform = Transform(yml.get('transform', []), variables)
         self.__opts = Opts(yml.get('opts', []), variables)
         self.__query = yml.get('query', '')
         self.__preview = yml.get('preview', '')
@@ -60,6 +62,13 @@ class Task():
     def __set_stdout(self, stdout):
         self.__stdout.set(stdout)
 
+    def __set_transform_opts(self):
+        if len(self.__preview) == 0:
+            self.__preview = 'echo {2..}'
+        else:
+            self.__preview = self.__preview.replace('{}', '{2..}')
+        self.__opts.set_nth_for_transform()
+
     def __get_expect(self):
         expects = self.__continue_expect + self.__stdout.get_expect()
         if 'enter' not in expects:
@@ -67,17 +76,27 @@ class Task():
         return '--expect="{}"'.format(','.join(expects))
 
     def __get_fzf_options(self):
-        return '{} {} {} {} {}'.format(self.__get_opts(), self.__get_query(), self.__get_preview(),
-                                    self.__get_bind(), self.__get_expect())
+        return '{} {} {} {} {}'.format(self.__get_opts(), self.__get_query(),
+                                       self.__get_preview(), self.__get_bind(),
+                                       self.__get_expect())
 
     def get_cmd(self):
-        cmd = '{} | fzf {}'.format(self.__get_input(), self.__get_fzf_options())
-        return cmd
+        if self.__transform.exists():
+            self.__set_transform_opts()
+            cmd = '{} | tee {} | {} | cat -n | fzf {}'.format(
+                self.__get_input(), Transform.get_temp_name(),
+                self.__transform.get_cmd(), self.__get_fzf_options())
+            return cmd
+        else:
+            cmd = '{} | fzf {}'.format(self.__get_input(),
+                                       self.__get_fzf_options())
+            return cmd
 
     def stdout(self, result):
+        query = result.split('\n')[0]
         key = result.split('\n')[1]
         content = '\n'.join(result.split('\n')[2:])
-        self.__stdout.write(key, content)
+        self.__stdout.write(query, key, content)
 
     def is_continue(self, result):
         key = result.split('\n')[1]
@@ -87,6 +106,8 @@ class Task():
         new_task = Task(self.__yml, self.__variables, self.__continue_expect)
         if 'input' in continue_dict:
             new_task.__set_input(continue_dict['input'])
+        if 'transform' in continue_dict:
+            new_task.__set_transform(continue_dict['transform'])
         if 'opts' in continue_dict:
             new_task.__set_opts(continue_dict['opts'])
         if 'query' in continue_dict:

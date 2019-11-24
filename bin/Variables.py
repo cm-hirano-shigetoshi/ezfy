@@ -1,13 +1,13 @@
-import os
+from os.path import dirname
 import re
 
 
 class Variables():
     def __init__(self, args):
-        self.__pyscript = args[0]
-        self.__subcmd = args[1]
-        self.__yml = args[2]
-        self.__args = args[3:]
+        self.pyscript = args[0]
+        self.subcmd = args[1]
+        self.yml = args[2]
+        self.args = args[3:]
         self.__pre_query = ""
         self.__pre_key = ""
         self.__pre_content = ""
@@ -19,16 +19,17 @@ class Variables():
         return text
 
     def expand_tool_vars(self, text):
-        text = text.replace('{ymldir}', os.path.dirname(self.__yml))
-        text = text.replace('{yml}', self.__yml)
+        text = text.replace('{tooldir}', dirname(dirname(self.pyscript)))
+        text = text.replace('{ymldir}', dirname(self.yml))
+        text = text.replace('{yml}', self.yml)
         return text
 
     def expand_args(self, text):
         for i in range(9):
-            if i >= len(self.__args):
+            if i >= len(self.args):
                 break
             text = text.replace('{' + 'arg{}'.format(str(i + 1)) + '}',
-                                self.__args[i])
+                                self.args[i])
         return text
 
     def expand_pre(self, text):

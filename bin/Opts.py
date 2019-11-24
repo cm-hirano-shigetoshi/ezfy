@@ -11,7 +11,8 @@ class Opts():
                 opts_array.append('--{}'.format(opt))
             else:
                 opts_array.append('--no-{}'.format(opt))
-        opts_array = list(map(lambda o: self.__variables.expand(o), opts_array))
+        opts_array = list(
+            map(lambda o: self.__variables.expand(o), opts_array))
         return ' '.join(opts_array)
 
     def set(self, opts):
@@ -21,3 +22,6 @@ class Opts():
             else:
                 self.__opts[opt] = True
         self.__opts['print-query'] = True
+
+    def set_nth_for_transform(self):
+        self.__opts['with-nth=2..'] = True
