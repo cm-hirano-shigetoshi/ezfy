@@ -1,4 +1,5 @@
 import os
+import re
 
 
 class Variables():
@@ -33,8 +34,14 @@ class Variables():
     def expand_pre(self, text):
         text = text.replace('{pre_query}', self.__pre_query)
         text = text.replace('{pre_key}', self.__pre_key)
-        text = text.replace('{pre_content}', self.__pre_content)
+        text = text.replace('{pre_content}', self.__get_pre_content())
         return text
+
+    def __get_pre_content(self):
+        if '\n' in re.sub('\n$', '', self.__pre_content):
+            return self.__pre_content
+        else:
+            return self.__pre_content[:-1]
 
     def set_pre(self, result):
         self.__pre_query = result.split('\n')[0]
