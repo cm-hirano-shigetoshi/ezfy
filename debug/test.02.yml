@@ -1,7 +1,6 @@
 base_task:
-  input: cat -n ~/xxdr.pl
-  transform:
-      - pipe: awk '{print $1}'
+  input: cat ~/xxdr.pl
+  transform: cat -n | awk '{print $1}'
   opts:
   - no-multi
   stdout:

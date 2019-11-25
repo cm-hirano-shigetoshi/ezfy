@@ -9,7 +9,7 @@ class Task():
         self.__yml = yml
         self.__variables = variables
         self.__set_input(yml['input'])
-        self.__transform = Transform(yml.get('transform', []), variables)
+        self.__transform = Transform(yml.get('transform', ''), variables)
         self.__opts = Opts(yml.get('opts', []), variables)
         self.__query = yml.get('query', '')
         self.__preview = yml.get('preview', '')

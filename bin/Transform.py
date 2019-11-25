@@ -5,7 +5,7 @@ temp_file = None
 
 class Transform():
     def __init__(self, transform, variables):
-        self.__transform = {}
+        self.__transform = ""
         self.__variables = variables
         self.set(transform)
 
@@ -13,10 +13,7 @@ class Transform():
         return len(self.__transform) > 0
 
     def get_cmd(self):
-        for ope_dict in self.__transform:
-            for ope, value in ope_dict.items():
-                if ope == 'pipe':
-                    return value
+        return self.__transform
 
     def set(self, transform):
         self.__transform = transform
