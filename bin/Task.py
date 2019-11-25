@@ -1,6 +1,6 @@
 from Opts import Opts
 from Bind import Bind
-from Stdout import Stdout
+from Output import Output
 from Transform import Transform
 
 
@@ -14,7 +14,7 @@ class Task():
         self.__query = yml.get('query', '')
         self.__preview = yml.get('preview', '')
         self.__bind = Bind(yml.get('bind', {}), variables)
-        self.__stdout = Stdout(yml.get('stdout', {}), variables)
+        self.__output = Output(yml.get('output', {}), variables)
         self.__continue_expect = continue_expect
 
     def __get_input(self):
@@ -59,8 +59,8 @@ class Task():
     def __set_bind(self, bind):
         self.__bind.set(bind)
 
-    def __set_stdout(self, stdout):
-        self.__stdout.set(stdout)
+    def __set_output(self, output):
+        self.__output.set(output)
 
     def __set_transform_opts(self):
         if len(self.__preview) == 0:
@@ -70,7 +70,7 @@ class Task():
         self.__opts.set_nth_for_transform()
 
     def __get_expect(self):
-        expects = self.__continue_expect + self.__stdout.get_expect()
+        expects = self.__continue_expect + self.__output.get_expect()
         if 'enter' not in expects:
             expects.append('enter')
         return '--expect="{}"'.format(','.join(expects))
@@ -92,11 +92,11 @@ class Task():
                                        self.__get_fzf_options())
             return cmd
 
-    def stdout(self, result):
+    def output(self, result):
         query = result.split('\n')[0]
         key = result.split('\n')[1]
         content = '\n'.join(result.split('\n')[2:])
-        self.__stdout.write(query, key, content)
+        self.__output.write(query, key, content)
 
     def is_continue(self, result):
         key = result.split('\n')[1]
@@ -118,6 +118,6 @@ class Task():
             new_task.__set_preview(continue_dict['preview'])
         if 'bind' in continue_dict:
             new_task.__set_bind(continue_dict['bind'])
-        if 'stdout' in continue_dict:
-            new_task.__set_stdout(continue_dict['stdout'])
+        if 'output' in continue_dict:
+            new_task.__set_output(continue_dict['output'])
         return new_task
