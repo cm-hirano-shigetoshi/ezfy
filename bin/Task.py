@@ -5,7 +5,7 @@ from Transform import Transform
 
 
 class Task():
-    def __init__(self, yml, variables, continue_expect):
+    def __init__(self, yml, variables, switch_expect):
         self.__yml = yml
         self.__variables = variables
         self.__set_input(yml['input'])
@@ -15,7 +15,7 @@ class Task():
         self.__preview = yml.get('preview', '')
         self.__bind = Bind(yml.get('bind', {}), variables)
         self.__output = Output(yml.get('output', {}), variables)
-        self.__continue_expect = continue_expect
+        self.__switch_expect = switch_expect
 
     def __get_input(self):
         return self.__variables.expand(self.__input)
@@ -70,7 +70,7 @@ class Task():
         self.__opts.set_nth_for_transform()
 
     def __get_expect(self):
-        expects = self.__continue_expect + self.__output.get_expect()
+        expects = self.__switch_expect + self.__output.get_expect()
         if 'enter' not in expects:
             expects.append('enter')
         return '--expect="{}"'.format(','.join(expects))
@@ -98,26 +98,26 @@ class Task():
         content = '\n'.join(result.split('\n')[2:])
         self.__output.write(query, key, content)
 
-    def is_continue(self, result):
+    def is_switch(self, result):
         key = result.split('\n')[1]
-        return key in self.__continue_expect
+        return key in self.__switch_expect
 
-    def create_continue_task(self, continue_dict):
-        new_task = Task(self.__yml, self.__variables, self.__continue_expect)
-        if 'input' in continue_dict:
-            new_task.__set_input(continue_dict['input'])
-        if 'transform' in continue_dict:
-            new_task.__set_transform(continue_dict['transform'])
-        if 'opts' in continue_dict:
-            new_task.__set_opts(continue_dict['opts'])
-        if 'query' in continue_dict:
-            new_task.__set_query(continue_dict['query'])
+    def create_switch_task(self, switch_dict):
+        new_task = Task(self.__yml, self.__variables, self.__switch_expect)
+        if 'input' in switch_dict:
+            new_task.__set_input(switch_dict['input'])
+        if 'transform' in switch_dict:
+            new_task.__set_transform(switch_dict['transform'])
+        if 'opts' in switch_dict:
+            new_task.__set_opts(switch_dict['opts'])
+        if 'query' in switch_dict:
+            new_task.__set_query(switch_dict['query'])
         else:
             new_task.__set_query('{pre_query}')
-        if 'preview' in continue_dict:
-            new_task.__set_preview(continue_dict['preview'])
-        if 'bind' in continue_dict:
-            new_task.__set_bind(continue_dict['bind'])
-        if 'output' in continue_dict:
-            new_task.__set_output(continue_dict['output'])
+        if 'preview' in switch_dict:
+            new_task.__set_preview(switch_dict['preview'])
+        if 'bind' in switch_dict:
+            new_task.__set_bind(switch_dict['bind'])
+        if 'output' in switch_dict:
+            new_task.__set_output(switch_dict['output'])
         return new_task
