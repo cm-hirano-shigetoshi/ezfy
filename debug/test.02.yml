@@ -6,7 +6,7 @@ base_task:
   - no-multi
   stdout:
       enter:
-      - before-transformed:
+      - pipe: cat -n
 continue:
   ctrl-r:
     input: echo "{pre_content}"

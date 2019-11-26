@@ -98,7 +98,7 @@ class Task():
         query = result.split('\n')[0]
         key = result.split('\n')[1]
         content = '\n'.join(result.split('\n')[2:])
-        self.__output.write(query, key, content)
+        self.__output.write(query, key, content, self.__transform)
 
     def is_switch(self, result):
         key = result.split('\n')[1]
