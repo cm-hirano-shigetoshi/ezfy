@@ -13,7 +13,8 @@ class Transform():
         return len(self.__transform) > 0
 
     def get_cmd(self):
-        return self.__transform
+        command = self.__variables.expand(self.__transform)
+        return command
 
     def set(self, transform):
         self.__transform = transform
@@ -29,3 +30,8 @@ class Transform():
         if temp_file is not None:
             temp_file.close()
             temp_file = None
+
+    def adjust_preview(preview):
+        cmd = 'cat {}'.format(Transform.get_temp_name())
+        cmd += ' | {tooldir}/bin/line_selector.pl {1}'
+        return preview.replace('{}', '$({})'.format(cmd))

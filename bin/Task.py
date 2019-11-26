@@ -25,8 +25,11 @@ class Task():
 
     def __get_preview(self):
         if len(self.__preview) > 0:
-            expanded = self.__variables.expand(self.__preview)
-            return '--preview="{}"'.format(expanded)
+            preview = self.__preview
+            if self.__transform.exists():
+                preview = Transform.adjust_preview(preview)
+            preview = self.__variables.expand(preview)
+            return "--preview='{}'".format(preview)
         else:
             return ''
 
@@ -62,11 +65,10 @@ class Task():
     def __set_output(self, output):
         self.__output.set(output)
 
+    def __set_transform(self, transform):
+        self.__transform.set(transform)
+
     def __set_transform_opts(self):
-        if len(self.__preview) == 0:
-            self.__preview = 'echo {2..}'
-        else:
-            self.__preview = self.__preview.replace('{}', '{2..}')
         self.__opts.set_nth_for_transform()
 
     def __get_expect(self):
