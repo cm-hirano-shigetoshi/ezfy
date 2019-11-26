@@ -7,10 +7,11 @@ base_task:
   - multi
   output:
       enter:
-      - pipe: cat -n
-continue:
+      - pipe: cat
+switch_task:
   ctrl-r:
     input: echo "{pre_content}"
+    transform: ''
     opts:
     - multi
     bind:

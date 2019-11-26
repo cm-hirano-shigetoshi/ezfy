@@ -1,5 +1,7 @@
 from os.path import dirname
 import re
+from Output import Output
+from Transform import Transform
 
 
 class Variables():
@@ -44,7 +46,25 @@ class Variables():
         else:
             return self.__pre_content[:-1]
 
-    def set_pre(self, result):
-        self.__pre_query = result.split('\n')[0]
-        self.__pre_key = result.split('\n')[1]
-        self.__pre_content = '\n'.join(result.split('\n')[2:])
+    def set_pre(self, result, transform):
+        if transform.exists():
+            self.__pre_query = result.split('\n')[0]
+            self.__pre_key = result.split('\n')[1]
+            indexes = ','.join(list(map(lambda l: Output.awk_1(l), result.split('\n')[2:])))
+            line_selector = self.expand("{tooldir}/bin/line_selector.pl")
+            content = Output.pipe('', 'cat {} | {} "{}"'.format(Transform.get_temp_name(), line_selector, indexes))
+            self.__pre_content = content
+        else:
+            self.__pre_query = result.split('\n')[0]
+            self.__pre_key = result.split('\n')[1]
+            self.__pre_content = '\n'.join(result.split('\n')[2:])
+
+    def pop_1(line):
+        line = line.replace('\t', ' ').lstrip(' ')
+        replaced_line = line
+        if ' ' not in replaced_line.rstrip(' '):
+            return ''
+        else:
+            return line[replaced_line.find(' '):].lstrip()
+
+

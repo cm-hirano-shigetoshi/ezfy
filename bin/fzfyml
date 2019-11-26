@@ -25,8 +25,8 @@ if sys.argv[1] == 'run':
                 task.output(result)
                 break
             else:
+                task.set_pre(result)
                 next_task = next_tasks.get(result.split('\n')[1])
-                variables.set_pre(result)
                 task = base_task.create_switch_task(next_task)
         else:
             break
