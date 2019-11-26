@@ -51,7 +51,7 @@ class Variables():
             self.__pre_query = result.split('\n')[0]
             self.__pre_key = result.split('\n')[1]
             indexes = ','.join(list(map(lambda l: Output.awk_1(l), result.split('\n')[2:])))
-            line_selector = self.expand("{tooldir}/bin/line_selector.pl")
+            line_selector = self.expand("{tooldir}/main/line_selector.pl")
             content = Output.pipe('', 'cat {} | {} "{}"'.format(Transform.get_temp_name(), line_selector, indexes))
             self.__pre_content = content
         else:

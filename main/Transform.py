@@ -33,7 +33,7 @@ class Transform():
 
     def adjust_preview(preview):
         cmd = 'cat {}'.format(Transform.get_temp_name())
-        cmd += ' | {tooldir}/bin/line_selector.pl {1}'
+        cmd += ' | {tooldir}/main/line_selector.pl {1}'
         preview = preview.replace('{}', '$({})'.format(cmd))
         preview = preview.replace('{index}', '{1}')
         return preview

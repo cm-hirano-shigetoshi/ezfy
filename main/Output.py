@@ -18,7 +18,7 @@ class Output():
             indexes = ','.join(
                 list(map(lambda l: Output.awk_1(l), content.split('\n'))))
             line_selector = self.__variables.expand(
-                "{tooldir}/bin/line_selector.pl")
+                "{tooldir}/main/line_selector.pl")
             content = Output.pipe(
                 '', 'cat {} | {} "{}"'.format(Transform.get_temp_name(),
                                               line_selector, indexes))
