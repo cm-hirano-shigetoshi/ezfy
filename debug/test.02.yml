@@ -3,8 +3,9 @@ base_task:
   transform: cat -n | awk '{print $1}'
   preview: echo "{}"
   opts:
-  - no-multi
-  stdout:
+  - reverse
+  - multi
+  output:
       enter:
       - pipe: cat -n
 continue:
@@ -14,7 +15,7 @@ continue:
     - multi
     bind:
       alt-p: select-all
-    stdout:
+    output:
       enter:
       - pipe: sed 's/^/XXXX/'
 
