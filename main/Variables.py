@@ -10,6 +10,7 @@ class Variables():
         self.subcmd = args[1]
         self.yml = args[2]
         self.args = args[3:]
+        self.vars = ['' for x in range(9)]
         self.__pre_query = ""
         self.__pre_key = ""
         self.__pre_content = ""
@@ -17,6 +18,7 @@ class Variables():
     def expand(self, text):
         text = self.expand_tool_vars(text)
         text = self.expand_args(text)
+        text = self.expand_vars(text)
         text = self.expand_pre(text)
         return text
 
@@ -34,6 +36,14 @@ class Variables():
                                 self.args[i])
         return text
 
+    def expand_vars(self, text):
+        for i in range(9):
+            if i >= len(self.vars):
+                break
+            text = text.replace('{' + 'var{}'.format(str(i + 1)) + '}',
+                                self.vars[i])
+        return text
+
     def expand_pre(self, text):
         text = text.replace('{pre_query}', self.__pre_query)
         text = text.replace('{pre_key}', self.__pre_key)
@@ -45,6 +55,12 @@ class Variables():
             return self.__pre_content
         else:
             return self.__pre_content[:-1]
+
+    def set_vars(self, var):
+        for v in var:
+            for key, val in v.items():
+                m = re.match('^var([1-9])', key)
+                self.vars[int(m.group(1)) - 1] = self.expand(val)
 
     def set_pre(self, result, transform):
         if transform.exists():

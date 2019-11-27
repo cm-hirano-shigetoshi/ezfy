@@ -47,6 +47,9 @@ class Task():
         else:
             return ''
 
+    def __set_vars(self, var):
+        self.__variables.set_vars(var)
+
     def __set_input(self, input_text):
         self.__input = input_text
 
@@ -109,6 +112,8 @@ class Task():
 
     def create_switch_task(self, switch_dict):
         new_task = Task(self.__yml, self.__variables, self.__switch_expect)
+        if 'vars' in switch_dict:
+            new_task.__set_vars(switch_dict['vars'])
         if 'input' in switch_dict:
             new_task.__set_input(switch_dict['input'])
         if 'transform' in switch_dict:

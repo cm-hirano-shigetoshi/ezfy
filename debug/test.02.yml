@@ -10,7 +10,9 @@ base_task:
       - pipe: cat
 switch_task:
   ctrl-r:
-    input: echo "{pre_content}"
+    vars:
+        - var1: "{pre_content}"
+    input: echo "{var1}"
     transform: ''
     opts:
     - multi
