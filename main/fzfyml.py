@@ -27,7 +27,7 @@ if sys.argv[1] == 'run':
             else:
                 task.set_pre(result)
                 next_task = next_tasks.get(result.split('\n')[1])
-                task = base_task.create_switch_task(next_task)
+                task = task.create_switch_task(next_task)
         else:
             break
 elif sys.argv[1] == 'debug':

@@ -5,17 +5,20 @@ from Transform import Transform
 
 
 class Task():
-    def __init__(self, yml, variables, switch_expect):
-        self.__yml = yml
-        self.__variables = variables
-        self.__set_input(yml['input'])
-        self.__transform = Transform(yml.get('transform', ''), variables)
-        self.__opts = Opts(yml.get('opts', []), variables)
-        self.__query = yml.get('query', '')
-        self.__preview = yml.get('preview', '')
-        self.__bind = Bind(yml.get('bind', {}), variables)
-        self.__output = Output(yml.get('output', {}), variables)
-        self.__switch_expect = switch_expect
+    def __init__(self, yml=None, variables=None, switch_expect=None):
+        if yml is not None:
+            self.__variables = variables
+
+            self.__variables.set_vars(yml.get('vars', []))
+            self.__set_input(yml['input'])
+            self.__transform = Transform(yml.get('transform', ''), variables)
+            self.__opts = Opts(yml.get('opts', []), variables)
+            self.__query = yml.get('query', '')
+            self.__preview = yml.get('preview', '')
+            self.__bind = Bind(yml.get('bind', {}), variables)
+            self.__output = Output(yml.get('output', {}), variables)
+
+            self.__switch_expect = switch_expect
 
     def __get_input(self):
         return self.__variables.expand(self.__input)
@@ -88,6 +91,19 @@ class Task():
                                        self.__get_preview(), self.__get_bind(),
                                        self.__get_expect())
 
+    def clone(self):
+        new_task = Task()
+        new_task.__variables = self.__variables
+        new_task.__input = self.__input
+        new_task.__transform = self.__transform
+        new_task.__opts = self.__opts
+        new_task.__query = self.__query
+        new_task.__preview = self.__preview
+        new_task.__bind = self.__bind
+        new_task.__output = self.__output
+        new_task.__switch_expect = self.__switch_expect
+        return new_task
+
     def get_cmd(self):
         if self.__transform.exists():
             self.__set_transform_opts()
@@ -111,7 +127,7 @@ class Task():
         return key in self.__switch_expect
 
     def create_switch_task(self, switch_dict):
-        new_task = Task(self.__yml, self.__variables, self.__switch_expect)
+        new_task = self.clone()
         if 'vars' in switch_dict:
             new_task.__set_vars(switch_dict['vars'])
         if 'input' in switch_dict:
