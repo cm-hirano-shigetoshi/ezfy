@@ -29,19 +29,16 @@ class Variables():
         return text
 
     def expand_args(self, text):
-        m = re.search(r'({arg([1-9])})', text)
-        if m is not None:
+        for m in re.finditer(r'({arg([1-9])})', text):
             index = int(m.group(2)) - 1
             text = text.replace(m.group(1), self.args[index])
         return text
 
     def expand_vars(self, text):
-        m = re.search(r'({var([1-9])})', text)
-        if m is not None:
+        for m in re.finditer(r'({var([1-9])})', text):
             index = int(m.group(2)) - 1
             text = text.replace(m.group(1), self.vars[index])
-        m = re.search(r'({var([1-9])\|([^\|]*)\|([^}]*)})', text)
-        if m is not None:
+        for m in re.finditer(r'({var([1-9])\|([^\|]*)\|([^}]*)})', text):
             index = int(m.group(2)) - 1
             replaced = m.group(4) if self.vars[index] == m.group(
                 3) else m.group(3)
