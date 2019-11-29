@@ -1,4 +1,4 @@
-from os.path import dirname
+from os.path import dirname, abspath
 import re
 from Output import Output
 from Transform import Transform
@@ -8,7 +8,7 @@ class Variables():
     def __init__(self, args):
         self.pyscript = args[0]
         self.subcmd = args[1]
-        self.yml = args[2]
+        self.yml = abspath(args[2])
         self.args = args[3:]
         self.vars = ['' for x in range(9)]
         self.__pre_query = ""
