@@ -4,13 +4,17 @@ temp_file = None
 
 
 class Transform():
-    def __init__(self, transform, variables):
+    def __init__(self, transform, variables, opts):
         self.__transform = ""
         self.__variables = variables
+        self.__delimiter = opts.get('delimiter')
         self.set(transform)
 
     def exists(self):
         return len(self.__transform) > 0
+
+    def get_delimiter(self):
+        return self.__delimiter
 
     def get_cmd(self):
         command = self.__variables.expand(self.__transform)

@@ -10,9 +10,9 @@ class Task():
             self.__variables = variables
 
             self.__variables.set_vars(yml.get('vars', []))
-            self.__set_input(yml['input'])
-            self.__transform = Transform(yml.get('transform', ''), variables)
             self.__opts = Opts(yml.get('opts', []), variables)
+            self.__set_input(yml['input'])
+            self.__transform = Transform(yml.get('transform', ''), variables, self.__opts)
             self.__query = yml.get('query', '')
             self.__preview = yml.get('preview', '')
             self.__bind = Bind(yml.get('bind', {}), variables)

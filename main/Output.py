@@ -16,7 +16,7 @@ class Output():
     def write(self, query, key, content, transform):
         if transform.exists():
             indexes = ','.join(
-                list(map(lambda l: Output.awk_1(l), content.split('\n'))))
+                list(map(lambda l: Output.awk_1(l, transform.get_delimiter()), content.split('\n'))))
             line_selector = self.__variables.expand(
                 "{tooldir}/main/line_selector.pl")
             content = Output.pipe(
@@ -40,9 +40,12 @@ class Output():
     def set(self, output):
         self.__output = output
 
-    def awk_1(line):
-        stripped = line.lstrip(' ')
-        if '\t' in stripped or ' ' in stripped:
-            return stripped[:stripped.replace('\t', ' ').find(' ')]
+    def awk_1(line, delimiter=None):
+        if delimiter is None:
+            stripped = line.lstrip(' ')
+            if '\t' in stripped or ' ' in stripped:
+                return stripped[:stripped.replace('\t', ' ').find(' ')]
+            else:
+                return stripped
         else:
-            return stripped
+            return line[:line.find(delimiter):]
