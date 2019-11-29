@@ -1,7 +1,7 @@
 base_task:
   input: cat ~/xxdr.pl
   transform: cat -n | awk '{print $1}'
-  preview: echo "{}"
+  preview: echo "{var1}"
   opts:
   - reverse
   - multi
@@ -9,6 +9,9 @@ base_task:
       enter:
       - pipe: cat
 switch_task:
+  ctrl-d:
+    vars:
+        - var1: '{var1|aaa|bbb}'
   ctrl-r:
     vars:
         - var1: "{pre_content}"

@@ -29,19 +29,20 @@ class Variables():
         return text
 
     def expand_args(self, text):
-        for i in range(9):
-            if i >= len(self.args):
-                break
-            text = text.replace('{' + 'arg{}'.format(str(i + 1)) + '}',
-                                self.args[i])
+        for m in re.finditer(r'({arg([1-9])})', text):
+            index = int(m.group(2)) - 1
+            text = text.replace(m.group(1), self.args[index])
         return text
 
     def expand_vars(self, text):
-        for i in range(9):
-            if i >= len(self.vars):
-                break
-            text = text.replace('{' + 'var{}'.format(str(i + 1)) + '}',
-                                self.vars[i])
+        for m in re.finditer(r'({var([1-9])})', text):
+            index = int(m.group(2)) - 1
+            text = text.replace(m.group(1), self.vars[index])
+        for m in re.finditer(r'({var([1-9])\|([^\|]*)\|([^}]*)})', text):
+            index = int(m.group(2)) - 1
+            replaced = m.group(4) if self.vars[index] == m.group(
+                3) else m.group(3)
+            text = text.replace(m.group(1), replaced)
         return text
 
     def expand_pre(self, text):
