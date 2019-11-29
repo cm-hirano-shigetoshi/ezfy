@@ -91,6 +91,15 @@ class Task():
                                        self.__get_preview(), self.__get_bind(),
                                        self.__get_expect())
 
+    def __get_transform_cat_n(self):
+        delimiter = self.__opts.get('delimiter', None)
+        if delimiter is None:
+            return 'cat -n'
+        else:
+            cat = 'cat -n'
+            sed = "sed 's/^\\s*\\([0-9]\\+\\)\\t/\\1{}/'".format(delimiter)
+            return '{} | {}'.format(cat, sed)
+
     def clone(self):
         new_task = Task()
         new_task.__variables = self.__variables
@@ -107,9 +116,10 @@ class Task():
     def get_cmd(self):
         if self.__transform.exists():
             self.__set_transform_opts()
-            cmd = '{} | tee {} | {} | cat -n | fzf {}'.format(
+            cmd = '{} | tee {} | {} | {} | fzf {}'.format(
                 self.__get_input(), Transform.get_temp_name(),
-                self.__transform.get_cmd(), self.__get_fzf_options())
+                self.__transform.get_cmd(), self.__get_transform_cat_n(),
+                self.__get_fzf_options())
             return cmd
         else:
             cmd = '{} | fzf {}'.format(self.__get_input(),
