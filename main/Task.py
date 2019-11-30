@@ -116,7 +116,7 @@ class Task():
     def get_cmd(self):
         if self.__transform.exists():
             self.__set_transform_opts()
-            cmd = '{} | tee {} | {} | {} | fzf {}'.format(
+            cmd = '{} | tee {} | {} | {} | SHELL=bash fzf {}'.format(
                 self.__get_input(), Transform.get_temp_name(),
                 self.__transform.get_cmd(), self.__get_transform_cat_n(),
                 self.__get_fzf_options())
