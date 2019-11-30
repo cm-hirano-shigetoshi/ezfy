@@ -30,7 +30,7 @@ class Task():
         if len(self.__preview) > 0:
             preview = self.__preview
             if self.__transform.exists():
-                preview = Transform.adjust_preview(preview)
+                preview = self.__transform.adjust_preview(preview)
             preview = self.__variables.expand(preview)
             return "--preview='{}'".format(preview)
         else:

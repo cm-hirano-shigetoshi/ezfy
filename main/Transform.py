@@ -1,3 +1,4 @@
+import re
 import tempfile
 
 temp_file = None
@@ -35,9 +36,38 @@ class Transform():
             temp_file.close()
             temp_file = None
 
-    def adjust_preview(preview):
-        cmd = 'cat {}'.format(Transform.get_temp_name())
-        cmd += ' | {tooldir}/main/line_selector.pl {1}'
-        preview = preview.replace('{}', '$({})'.format(cmd))
+    def adjust_preview(self, preview):
+        # {}           => {..}          => range(1,-1)
+        # {..}         => {..}          => range(1,-1)
+        # {2}          => {2}           => single(2)
+        # {-2}         => {-2}          => single(-2)
+        # {2..5}       => {2..5}        => range(2,5)
+        # {2..-2}      => {2..-2}       => range(2,-2)
+        # {2..}        => {2..}         => range(2,-1)
+        # {2..-2}      => {2..-2}       => range(2,-2)
+        # {..5}        => {..5}         => range(1,5)
+        # {..-2}       => {..-2}        => range(1,-2)
+        # comma separated is unsupported.
+        # {1,3,5}      => {1}{3}{5}     => [single(1),single(3),single(5)]
+        # {1..3,2..5}  => {..3},{2..5}  => [range(1,3),range(2,5)]
+
+        base_cmd = 'cat {}'.format(Transform.get_temp_name())
+        base_cmd += ' | {tooldir}/main/line_selector.pl {index}'
+        for m in re.finditer(r'{}', preview):
+            preview = preview.replace(m.group(0), '$({})'.format(base_cmd))
+        for m in re.finditer(r'{([-0-9]*)\.\.([-0-9]*)}', preview):
+            start = m.group(1) if len(m.group(1)) > 0 else '1'
+            end = m.group(2) if len(m.group(2)) > 0 else '-1'
+            cmd = base_cmd + ' | {tooldir}/main/range.py '
+            cmd += '{} {} {}'.format(
+                '' if self.__delimiter is None else "-F '{}'".format(
+                    self.__delimiter), start, end)
+            preview = preview.replace(m.group(0), '$({})'.format(cmd))
+        for m in re.finditer(r'{([-0-9]+)}', preview):
+            cmd = base_cmd + ' | {tooldir}/main/single.py '
+            cmd += '{} {}'.format(
+                '' if self.__delimiter is None else "-F '{}'".format(
+                    self.__delimiter), m.group(1))
+            preview = preview.replace(m.group(0), '$({})'.format(cmd))
         preview = preview.replace('{index}', '{1}')
         return preview
