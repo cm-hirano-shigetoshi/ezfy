@@ -37,19 +37,19 @@ class Transform():
             temp_file = None
 
     def adjust_preview(self, preview):
-        # {}           => {..}          => range(1,-1)
-        # {..}         => {..}          => range(1,-1)
-        # {2}          => {2}           => single(2)
-        # {-2}         => {-2}          => single(-2)
-        # {2..5}       => {2..5}        => range(2,5)
-        # {2..-2}      => {2..-2}       => range(2,-2)
-        # {2..}        => {2..}         => range(2,-1)
-        # {2..-2}      => {2..-2}       => range(2,-2)
-        # {..5}        => {..5}         => range(1,5)
-        # {..-2}       => {..-2}        => range(1,-2)
+        # {}           => 範囲指定なし
+        # {..}         => range(1,-1)
+        # {2}          => single(2)
+        # {-2}         => single(-2)
+        # {2..5}       => range(2,5)
+        # {2..-2}      => range(2,-2)
+        # {2..}        => range(2,-1)
+        # {2..-2}      => range(2,-2)
+        # {..5}        => range(1,5)
+        # {..-2}       => range(1,-2)
         # comma separated is unsupported.
-        # {1,3,5}      => {1}{3}{5}     => [single(1),single(3),single(5)]
-        # {1..3,2..5}  => {..3},{2..5}  => [range(1,3),range(2,5)]
+        # {1,3,5}      => [single(1),single(3),single(5)]
+        # {1..3,2..5}  => [range(1,3),range(2,5)]
 
         base_cmd = 'cat {}'.format(Transform.get_temp_name())
         base_cmd += ' | {tooldir}/main/line_selector.pl {index}'

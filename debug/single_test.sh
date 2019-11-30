@@ -36,4 +36,5 @@ range_test "  aaa: bbb :ccc  " "aaa: bbb" 1 2 -F :
 range_test "  aaa: bbb :ccc  " "aaa" 1 -3 -F :
 range_test "  aaa: bbb :ccc  " "aaa: bbb :ccc" 1 -1 -F :
 range_test "  aaa] bbb ]ccc  " "aaa] bbb" 1 -2 -F ']'
+range_test "  aaa  bbb  ccc  " "" -1 2
 
