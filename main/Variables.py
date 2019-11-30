@@ -79,11 +79,3 @@ class Variables():
             self.__pre_query = result.split('\n')[0]
             self.__pre_key = result.split('\n')[1]
             self.__pre_content = '\n'.join(result.split('\n')[2:])
-
-    def pop_1(line):
-        line = line.replace('\t', ' ').lstrip(' ')
-        replaced_line = line
-        if ' ' not in replaced_line.rstrip(' '):
-            return ''
-        else:
-            return line[replaced_line.find(' '):].lstrip()

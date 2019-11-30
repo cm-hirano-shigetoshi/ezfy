@@ -10,9 +10,9 @@ class Task():
             self.__variables = variables
 
             self.__variables.set_vars(yml.get('vars', []))
-            self.__set_input(yml['input'])
-            self.__transform = Transform(yml.get('transform', ''), variables)
             self.__opts = Opts(yml.get('opts', []), variables)
+            self.__set_input(yml['input'])
+            self.__transform = Transform(yml.get('transform', ''), variables, self.__opts)
             self.__query = yml.get('query', '')
             self.__preview = yml.get('preview', '')
             self.__bind = Bind(yml.get('bind', {}), variables)
@@ -30,7 +30,7 @@ class Task():
         if len(self.__preview) > 0:
             preview = self.__preview
             if self.__transform.exists():
-                preview = Transform.adjust_preview(preview)
+                preview = self.__transform.adjust_preview(preview)
             preview = self.__variables.expand(preview)
             return "--preview='{}'".format(preview)
         else:
