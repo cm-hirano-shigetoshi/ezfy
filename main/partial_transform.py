@@ -8,12 +8,16 @@ from subprocess import PIPE
 p = argparse.ArgumentParser()
 p.add_argument('nth', type=int, help='nth')
 p.add_argument('command', help='command')
-p.add_argument('-F', '--delimiter', default=' ', help='default: space')
+p.add_argument('-F', '--delimiter', help='default: awk style')
 args = p.parse_args()
 
 def get_parts(line):
+    if args.delimiter is not None:
+        pattern = r'[^{}]+'
+    else:
+        pattern = r'\S+'
     count = 0
-    for m in re.finditer(r'[^{}]+'.format(args.delimiter), line):
+    for m in re.finditer(pattern, line):
         count += 1
         if count >= args.nth:
             left = line[:m.start()]
