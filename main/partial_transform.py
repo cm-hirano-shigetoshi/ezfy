@@ -13,13 +13,26 @@ args = p.parse_args()
 
 def get_parts(line):
     if args.delimiter is not None:
-        pattern = r'[^{}]+'
+        pattern = r'[^{}]+'.format(args.delimiter)
     else:
         pattern = r'\S+'
-    count = 0
-    for m in re.finditer(pattern, line):
-        count += 1
-        if count >= args.nth:
+    if args.nth == 0:
+        return ('', line, '')
+    elif args.nth > 0:
+        count = 0
+        for m in re.finditer(pattern, line):
+            count += 1
+            if count >= args.nth:
+                left = line[:m.start()]
+                target = m.group(0)
+                right = line[m.end():]
+                return (left, target, right)
+    elif args.nth < 0:
+        matches = []
+        for m in re.finditer(pattern, line):
+            matches.append(m)
+        if len(matches) >= -args.nth:
+            m = matches[len(matches) + args.nth]
             left = line[:m.start()]
             target = m.group(0)
             right = line[m.end():]
