@@ -11,6 +11,7 @@ p.add_argument('command', help='command')
 p.add_argument('-F', '--delimiter', help='default: awk style')
 args = p.parse_args()
 
+
 def get_parts(line):
     if args.delimiter is not None:
         pattern = r'[^{}]+'.format(args.delimiter)
@@ -26,7 +27,7 @@ def get_parts(line):
                 left = line[:m.start()]
                 target = m.group(0)
                 right = line[m.end():]
-                return (left, target, right)
+                return (left, target, right, False)
     elif args.nth < 0:
         matches = []
         for m in re.finditer(pattern, line):
@@ -36,37 +37,46 @@ def get_parts(line):
             left = line[:m.start()]
             target = m.group(0)
             right = line[m.end():]
-            return (left, target, right)
-    return (line, '', '')
+            return (left, target, right, False)
+    return ('', line, '', True)
+
 
 def shell_command(lines, command):
     input_text = '\n'.join(lines)
-    proc = subprocess.run(command, shell=True, input=input_text, stdout=PIPE, text=True)
+    proc = subprocess.run(
+        command, shell=True, input=input_text, stdout=PIPE, text=True)
     return proc.stdout.split('\n')
 
-def flush(left, target, right):
+
+def flush(left, target, right, asis):
     transformed = shell_command(target, args.command)
     for i in range(len(left)):
-        print('{}{}{}'.format(left[i], transformed[i], right[i]))
+        if asis[i]:
+            print('{}{}{}'.format(left[i], target[i], right[i]))
+        else:
+            print('{}{}{}'.format(left[i], transformed[i], right[i]))
+
 
 try:
     line = sys.stdin.readline()
     left_lines = []
     target_lines = []
     right_lines = []
+    asis_lines = []
     while line:
         line = line.strip('\n')
-        (left, target, right) = get_parts(line)
+        (left, target, right, asis) = get_parts(line)
         left_lines.append(left)
         target_lines.append(target)
         right_lines.append(right)
+        asis_lines.append(asis)
         if len(target_lines) > 1000:
-            flush(left_lines, target_lines, right_lines)
+            flush(left_lines, target_lines, right_lines, asis_lines)
             left_lines = []
             target_lines = []
             right_lines = []
         line = sys.stdin.readline()
-    flush(left_lines, target_lines, right_lines)
+    flush(left_lines, target_lines, right_lines, asis_lines)
 except BrokenPipeError:
     devnull = os.open(os.devnull, os.O_WRONLY)
     os.dup2(devnull, sys.stdout.fileno())
