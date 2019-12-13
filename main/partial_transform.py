@@ -9,6 +9,8 @@ p = argparse.ArgumentParser()
 p.add_argument('nth', type=int, help='nth')
 p.add_argument('command', help='command')
 p.add_argument('-F', '--delimiter', help='default: awk style')
+p.add_argument('--sync', action='store_true', help='synchronous output')
+p.add_argument('--bufferN', type=int, default=1000, help='flush each N line')
 args = p.parse_args()
 
 
@@ -70,7 +72,7 @@ try:
         target_lines.append(target)
         right_lines.append(right)
         asis_lines.append(asis)
-        if len(target_lines) > 1000:
+        if not args.sync and len(target_lines) >= args.bufferN:
             flush(left_lines, target_lines, right_lines, asis_lines)
             left_lines = []
             target_lines = []
