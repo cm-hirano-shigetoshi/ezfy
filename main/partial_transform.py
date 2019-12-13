@@ -6,21 +6,16 @@ import subprocess
 from subprocess import PIPE
 
 p = argparse.ArgumentParser()
-#p.add_argument('arg1', help='引数です')
-p.add_argument('-a', '--opt_a', help='オプションです')
-p.add_argument('-b', '--opt_b', default='aiueo', help='オプションです')
-p.add_argument('-c', '--opt_c', default=0.1, type=float)
-p.add_argument('-d', '--opt_d', action='store_true')
+p.add_argument('nth', type=int, help='nth')
+p.add_argument('command', help='command')
+p.add_argument('-F', '--delimiter', default=' ', help='default: space')
 args = p.parse_args()
-
-delimtier = '/'
-command = 'cat -n'
 
 def get_parts(line):
     count = 0
-    for m in re.finditer(r'[^{}]+'.format(delimtier), line):
+    for m in re.finditer(r'[^{}]+'.format(args.delimiter), line):
         count += 1
-        if count == 2:
+        if count >= args.nth:
             left = line[:m.start()]
             target = m.group(0)
             right = line[m.end():]
@@ -33,7 +28,7 @@ def shell_command(lines, command):
     return proc.stdout.split('\n')
 
 def flush(left, target, right):
-    transformed = shell_command(target, command)
+    transformed = shell_command(target, args.command)
     for i in range(len(left)):
         print('{}{}{}'.format(left[i], transformed[i], right[i]))
 
@@ -54,7 +49,7 @@ try:
             target_lines = []
             right_lines = []
         line = sys.stdin.readline()
-    flush()
+    flush(left_lines, target_lines, right_lines)
 except BrokenPipeError:
     devnull = os.open(os.devnull, os.O_WRONLY)
     os.dup2(devnull, sys.stdout.fileno())
