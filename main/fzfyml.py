@@ -23,7 +23,7 @@ if sys.argv[1] == 'run':
         result = Result(r, task.get_transform())
         if result.is_empty():
             break
-        if task.is_switch(result.key):
+        if switch.has(result.key):
             task.set_pre(result)
             next_task = switch.get(result.key)
             task = task.create_switch_task(next_task)

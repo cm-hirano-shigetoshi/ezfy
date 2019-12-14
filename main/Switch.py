@@ -11,3 +11,6 @@ class Switch():
             return self.__switch_dict[key]
         else:
             return default
+
+    def has(self, key):
+        return key in self.__switch_dict

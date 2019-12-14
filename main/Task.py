@@ -138,9 +138,6 @@ class Task():
     def output(self, result):
         self.__output.write(result)
 
-    def is_switch(self, key):
-        return key in self.__switch_expect
-
     def create_switch_task(self, switch_dict):
         new_task = self.clone()
         if 'vars' in switch_dict:
