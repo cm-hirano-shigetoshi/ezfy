@@ -4,23 +4,23 @@ from Temporary import Temporary
 
 class Transform():
     def __init__(self, transform, variables, opts):
-        self.__transform = ""
+        self.__command = ""
         self.__variables = variables
         self.__delimiter = opts.get('delimiter')
         self.set(transform)
 
     def exists(self):
-        return len(self.__transform) > 0
+        return len(self.__command) > 0
 
     def get_delimiter(self):
         return self.__delimiter
 
     def get_cmd(self):
-        command = self.__variables.expand(self.__transform)
+        command = self.__variables.expand(self.__command)
         return command
 
     def set(self, transform):
-        self.__transform = transform
+        self.__command = transform
 
     def adjust_preview(self, preview):
         # {}           => 範囲指定なし

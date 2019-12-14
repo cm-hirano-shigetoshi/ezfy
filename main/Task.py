@@ -52,6 +52,9 @@ class Task():
         else:
             return ''
 
+    #
+    # Switching to the new task
+    #
     def __set_vars(self, var):
         self.__variables.set_vars(var)
 
