@@ -6,6 +6,7 @@ import Command
 from Task import Task
 from Switch import Switch
 from Variables import Variables
+from Result import Result
 
 with open(sys.argv[2]) as f:
     yml = yaml.load(f, Loader=yaml.SafeLoader)
@@ -18,16 +19,16 @@ task = base_task
 
 if sys.argv[1] == 'run':
     while True:
-        result = Command.execute(task.get_cmd())
-        if len(result) > 0:
-            if not task.is_switch(result):
-                task.output(result)
-                break
-            else:
-                task.set_pre(result)
-                next_task = switch.get(result.split('\n')[1])
-                task = task.create_switch_task(next_task)
+        r = Command.execute(task.get_cmd())
+        result = Result(r, task.get_transform())
+        if result.is_empty():
+            break
+        if task.is_switch(result.key):
+            task.set_pre(result)
+            next_task = switch.get(result.key)
+            task = task.create_switch_task(next_task)
         else:
+            task.output(result)
             break
 elif sys.argv[1] == 'debug':
     if len(sys.argv) > 3:

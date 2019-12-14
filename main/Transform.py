@@ -1,4 +1,5 @@
 import re
+import Command
 from Temporary import Temporary
 
 
@@ -9,8 +10,8 @@ class Transform():
         self.__delimiter = opts.get('delimiter')
         self.set(transform)
 
-    def exists(self):
-        return len(self.__command) > 0
+    def is_empty(self):
+        return len(self.__command) == 0
 
     def get_delimiter(self):
         return self.__delimiter
@@ -21,6 +22,16 @@ class Transform():
 
     def set(self, transform):
         self.__command = transform
+
+    def get_original_content(self, content):
+        indexes = ','.join(
+            list(
+                map(lambda l: Command.awk_1(l, self.__delimiter),
+                    content.split('\n'))))
+        line_selector = self.__variables.expand(
+            "{tooldir}/main/line_selector.pl")
+        return Command.execute('cat {} | {} "{}"'.format(
+            Temporary.temp_path('transform'), line_selector, indexes))
 
     def adjust_preview(self, preview):
         # {}           => 範囲指定なし

@@ -22,6 +22,9 @@ class Task():
 
             self.__switch_expect = switch_expect
 
+    def get_transform(self):
+        return self.__transform
+
     def __get_input(self):
         return self.__variables.expand(self.__input)
 
@@ -31,7 +34,7 @@ class Task():
     def __get_preview(self):
         if len(self.__preview) > 0:
             preview = self.__preview
-            if self.__transform.exists():
+            if not self.__transform.is_empty():
                 preview = self.__transform.adjust_preview(preview)
             preview = self.__variables.expand(preview)
             return "--preview='{}'".format(preview)
@@ -119,7 +122,7 @@ class Task():
         return new_task
 
     def get_cmd(self):
-        if self.__transform.exists():
+        if not self.__transform.is_empty():
             self.__set_transform_opts()
             Temporary.create_temp_file('transform')
             cmd = '{} | tee {} | {} | {} | SHELL=bash fzf {}'.format(
@@ -133,13 +136,9 @@ class Task():
             return cmd
 
     def output(self, result):
-        query = result.split('\n')[0]
-        key = result.split('\n')[1]
-        content = '\n'.join(result.split('\n')[2:])
-        self.__output.write(query, key, content, self.__transform)
+        self.__output.write(result)
 
-    def is_switch(self, result):
-        key = result.split('\n')[1]
+    def is_switch(self, key):
         return key in self.__switch_expect
 
     def create_switch_task(self, switch_dict):
