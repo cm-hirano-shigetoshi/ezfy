@@ -2,6 +2,7 @@ from Opts import Opts
 from Bind import Bind
 from Output import Output
 from Transform import Transform
+from Temporary import Temporary
 
 
 class Task():
@@ -12,7 +13,8 @@ class Task():
             self.__variables.set_vars(yml.get('vars', []))
             self.__opts = Opts(yml.get('opts', []), variables)
             self.__set_input(yml['input'])
-            self.__transform = Transform(yml.get('transform', ''), variables, self.__opts)
+            self.__transform = Transform(
+                yml.get('transform', ''), variables, self.__opts)
             self.__query = yml.get('query', '')
             self.__preview = yml.get('preview', '')
             self.__bind = Bind(yml.get('bind', {}), variables)
@@ -116,8 +118,9 @@ class Task():
     def get_cmd(self):
         if self.__transform.exists():
             self.__set_transform_opts()
+            Temporary.create_temp_file('transform')
             cmd = '{} | tee {} | {} | {} | SHELL=bash fzf {}'.format(
-                self.__get_input(), Transform.get_temp_name(),
+                self.__get_input(), Temporary.temp_path('transform'),
                 self.__transform.get_cmd(), self.__get_transform_cat_n(),
                 self.__get_fzf_options())
             return cmd

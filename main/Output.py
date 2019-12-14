@@ -1,7 +1,7 @@
 import re
 import subprocess
 from subprocess import PIPE
-from Transform import Transform
+from Temporary import Temporary
 
 
 class Output():
@@ -16,12 +16,14 @@ class Output():
     def write(self, query, key, content, transform):
         if transform.exists():
             indexes = ','.join(
-                list(map(lambda l: Output.awk_1(l, transform.get_delimiter()), content.split('\n'))))
+                list(
+                    map(lambda l: Output.awk_1(l, transform.get_delimiter()),
+                        content.split('\n'))))
             line_selector = self.__variables.expand(
                 "{tooldir}/main/line_selector.pl")
             content = Output.pipe(
-                '', 'cat {} | {} "{}"'.format(Transform.get_temp_name(),
-                                              line_selector, indexes))
+                '', 'cat {} | {} "{}"'.format(
+                    Temporary.temp_path('transform'), line_selector, indexes))
         if key == 'enter' and key not in self.__output:
             print(re.sub('\n$', '', content))
         else:

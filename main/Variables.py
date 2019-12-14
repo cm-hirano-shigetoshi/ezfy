@@ -1,7 +1,7 @@
 from os.path import dirname, abspath
 import re
 from Output import Output
-from Transform import Transform
+from Temporary import Temporary
 
 
 class Variables():
@@ -72,8 +72,8 @@ class Variables():
                          result.split('\n')[2:])))
             line_selector = self.expand("{tooldir}/main/line_selector.pl")
             content = Output.pipe(
-                '', 'cat {} | {} "{}"'.format(Transform.get_temp_name(),
-                                              line_selector, indexes))
+                '', 'cat {} | {} "{}"'.format(
+                    Temporary.temp_path('transform'), line_selector, indexes))
             self.__pre_content = content
         else:
             self.__pre_query = result.split('\n')[0]
