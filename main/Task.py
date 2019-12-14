@@ -14,10 +14,11 @@ class Task():
             self.__opts = Opts(yml.get('opts', []), variables)
             self.__set_input(yml['input'])
             self.__transform = Transform(
-                yml.get('transform', ''), variables, self.__opts)
+                yml.get('transform', ''), variables,
+                self.__opts.get('delimiter', None))
             self.__query = yml.get('query', '')
             self.__preview = yml.get('preview', '')
-            self.__bind = Bind(yml.get('bind', {}), variables)
+            self.__bind = Bind(yml.get('bind', {}))
             self.__output = Output(yml.get('output', {}), variables)
 
             self.__switch_expect = switch_expect

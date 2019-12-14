@@ -24,9 +24,8 @@ if sys.argv[1] == 'run':
         if result.is_empty():
             break
         if switch.has(result.key):
-            variables.set_pre(result)
-            next_task = switch.get(result.key)
-            task = task.create_switch_task(next_task)
+            variables.set_pre_result(result)
+            task = task.create_switch_task(switch.get_switch_dict(result.key))
         else:
             task.output(result)
             break

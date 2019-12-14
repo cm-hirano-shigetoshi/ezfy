@@ -1,7 +1,6 @@
 class Bind():
-    def __init__(self, bind, variables):
+    def __init__(self, bind):
         self.__bind = {}
-        self.__variables = variables
         self.set(bind)
 
     def __split_commands(self, command):

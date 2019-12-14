@@ -4,10 +4,10 @@ from Temporary import Temporary
 
 
 class Transform():
-    def __init__(self, transform, variables, opts):
+    def __init__(self, transform, variables, delimiter):
         self.__command = ""
         self.__variables = variables
-        self.__delimiter = opts.get('delimiter')
+        self.__delimiter = delimiter
         self.set(transform)
 
     def is_empty(self):

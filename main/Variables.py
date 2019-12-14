@@ -55,7 +55,7 @@ class Variables():
         text = text.replace('{pre_content}', self.__get_pre_content())
         return text
 
-    def set_pre(self, result):
+    def set_pre_result(self, result):
         self.__pre_query = result.query
         self.__pre_key = result.key
         self.__pre_content = result.get_content()

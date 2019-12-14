@@ -6,11 +6,8 @@ class Switch():
     def get_expect(self):
         return list(self.__switch_dict.keys())
 
-    def get(self, key, default={}):
-        if key in self.__switch_dict:
-            return self.__switch_dict[key]
-        else:
-            return default
+    def get_switch_dict(self, key):
+        return self.__switch_dict[key]
 
     def has(self, key):
         return key in self.__switch_dict
