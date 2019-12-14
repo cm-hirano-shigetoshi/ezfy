@@ -85,9 +85,6 @@ class Task():
     def __set_transform_opts(self):
         self.__opts.set_nth_for_transform()
 
-    def set_pre(self, result):
-        self.__variables.set_pre(result, self.__transform)
-
     def __get_expect(self):
         expects = self.__switch_expect + self.__output.get_expect()
         if 'enter' not in expects:

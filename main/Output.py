@@ -12,7 +12,7 @@ class Output():
         return list(self.__output.keys())
 
     def write(self, result):
-        if result.key == 'enter' and result.key not in self.__output:
+        if result.key not in self.__output and result.key == 'enter':
             print(re.sub('\n$', '', result.get_content()))
         else:
             content = result.get_content()
