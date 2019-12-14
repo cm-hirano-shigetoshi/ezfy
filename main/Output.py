@@ -1,6 +1,5 @@
 import re
-import subprocess
-from subprocess import PIPE
+import Command
 from Temporary import Temporary
 
 
@@ -21,9 +20,8 @@ class Output():
                         content.split('\n'))))
             line_selector = self.__variables.expand(
                 "{tooldir}/main/line_selector.pl")
-            content = Output.pipe(
-                '', 'cat {} | {} "{}"'.format(
-                    Temporary.temp_path('transform'), line_selector, indexes))
+            content = Command.execute('cat {} | {} "{}"'.format(
+                Temporary.temp_path('transform'), line_selector, indexes))
         if key == 'enter' and key not in self.__output:
             print(re.sub('\n$', '', content))
         else:
@@ -31,13 +29,8 @@ class Output():
                 for ope, value in ope_dict.items():
                     if ope == 'pipe':
                         command = self.__variables.expand(value)
-                        content = Output.pipe(content, command)
+                        content = Command.transform(content, command)
             print(re.sub('\n$', '', content))
-
-    def pipe(input_text, command):
-        proc = subprocess.run(
-            command, shell=True, input=input_text, stdout=PIPE, text=True)
-        return proc.stdout
 
     def set(self, output):
         self.__output = output

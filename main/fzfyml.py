@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 import sys
 import yaml
-import subprocess
-from subprocess import PIPE
 
+import Command
 from Task import Task
 from Switch import Switch
 from Variables import Variables
@@ -19,8 +18,7 @@ task = base_task
 
 if sys.argv[1] == 'run':
     while True:
-        proc = subprocess.run(task.get_cmd(), shell=True, stdout=PIPE)
-        result = proc.stdout.decode('utf8')
+        result = Command.execute(task.get_cmd())
         if len(result) > 0:
             if not task.is_switch(result):
                 task.output(result)
