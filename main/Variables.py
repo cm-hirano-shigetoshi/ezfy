@@ -1,12 +1,10 @@
 from os.path import dirname, abspath
 import re
-from Output import Output
-from Transform import Transform
 
 
 class Variables():
     def __init__(self, args):
-        self.pyscript = args[0]
+        self.pyscript = abspath(args[0])
         self.subcmd = args[1]
         self.yml = abspath(args[2])
         self.args = args[3:]
@@ -14,6 +12,12 @@ class Variables():
         self.__pre_query = ""
         self.__pre_key = ""
         self.__pre_content = ""
+
+    def set_vars(self, var):
+        for v in var:
+            for key, val in v.items():
+                m = re.match('^var([1-9])', key)
+                self.vars[int(m.group(1)) - 1] = self.expand(val)
 
     def expand(self, text):
         text = self.expand_tool_vars(text)
@@ -51,31 +55,13 @@ class Variables():
         text = text.replace('{pre_content}', self.__get_pre_content())
         return text
 
+    def set_pre_result(self, result):
+        self.__pre_query = result.query
+        self.__pre_key = result.key
+        self.__pre_content = result.get_content()
+
     def __get_pre_content(self):
         if '\n' in re.sub('\n$', '', self.__pre_content):
             return self.__pre_content
         else:
             return self.__pre_content[:-1]
-
-    def set_vars(self, var):
-        for v in var:
-            for key, val in v.items():
-                m = re.match('^var([1-9])', key)
-                self.vars[int(m.group(1)) - 1] = self.expand(val)
-
-    def set_pre(self, result, transform):
-        if transform.exists():
-            self.__pre_query = result.split('\n')[0]
-            self.__pre_key = result.split('\n')[1]
-            indexes = ','.join(
-                list(map(lambda l: Output.awk_1(l),
-                         result.split('\n')[2:])))
-            line_selector = self.expand("{tooldir}/main/line_selector.pl")
-            content = Output.pipe(
-                '', 'cat {} | {} "{}"'.format(Transform.get_temp_name(),
-                                              line_selector, indexes))
-            self.__pre_content = content
-        else:
-            self.__pre_query = result.split('\n')[0]
-            self.__pre_key = result.split('\n')[1]
-            self.__pre_content = '\n'.join(result.split('\n')[2:])

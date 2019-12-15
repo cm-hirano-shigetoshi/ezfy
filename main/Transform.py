@@ -1,40 +1,37 @@
 import re
-import tempfile
-
-temp_file = None
+import Command
+from Temporary import Temporary
 
 
 class Transform():
-    def __init__(self, transform, variables, opts):
-        self.__transform = ""
+    def __init__(self, transform, variables, delimiter):
+        self.__command = ""
         self.__variables = variables
-        self.__delimiter = opts.get('delimiter')
+        self.__delimiter = delimiter
         self.set(transform)
 
-    def exists(self):
-        return len(self.__transform) > 0
+    def is_empty(self):
+        return len(self.__command) == 0
 
     def get_delimiter(self):
         return self.__delimiter
 
     def get_cmd(self):
-        command = self.__variables.expand(self.__transform)
+        command = self.__variables.expand(self.__command)
         return command
 
     def set(self, transform):
-        self.__transform = transform
+        self.__command = transform
 
-    def get_temp_name():
-        global temp_file
-        if temp_file is None:
-            temp_file = tempfile.NamedTemporaryFile()
-        return temp_file.name
-
-    def close_temp_file():
-        global temp_file
-        if temp_file is not None:
-            temp_file.close()
-            temp_file = None
+    def get_original_content(self, content):
+        indexes = ','.join(
+            list(
+                map(lambda l: Command.awk_1(l, self.__delimiter),
+                    content.split('\n'))))
+        line_selector = self.__variables.expand(
+            "{tooldir}/main/line_selector.pl")
+        return Command.execute('cat {} | {} "{}"'.format(
+            Temporary.temp_path('transform'), line_selector, indexes))
 
     def adjust_preview(self, preview):
         # {}           => 範囲指定なし
@@ -51,7 +48,7 @@ class Transform():
         # {1,3,5}      => [single(1),single(3),single(5)]
         # {1..3,2..5}  => [range(1,3),range(2,5)]
 
-        base_cmd = 'cat {}'.format(Transform.get_temp_name())
+        base_cmd = 'cat {}'.format(Temporary.temp_path('transform'))
         base_cmd += ' | {tooldir}/main/line_selector.pl {index}'
         for m in re.finditer(r'{}', preview):
             preview = preview.replace(m.group(0), '$({})'.format(base_cmd))

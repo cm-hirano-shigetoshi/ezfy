@@ -1,7 +1,5 @@
 import re
-import subprocess
-from subprocess import PIPE
-from Transform import Transform
+import Command
 
 
 class Output():
@@ -13,39 +11,17 @@ class Output():
     def get_expect(self):
         return list(self.__output.keys())
 
-    def write(self, query, key, content, transform):
-        if transform.exists():
-            indexes = ','.join(
-                list(map(lambda l: Output.awk_1(l, transform.get_delimiter()), content.split('\n'))))
-            line_selector = self.__variables.expand(
-                "{tooldir}/main/line_selector.pl")
-            content = Output.pipe(
-                '', 'cat {} | {} "{}"'.format(Transform.get_temp_name(),
-                                              line_selector, indexes))
-        if key == 'enter' and key not in self.__output:
-            print(re.sub('\n$', '', content))
+    def write(self, result):
+        if result.key not in self.__output and result.key == 'enter':
+            print(re.sub('\n$', '', result.get_content()))
         else:
-            for ope_dict in self.__output[key]:
+            content = result.get_content()
+            for ope_dict in self.__output[result.key]:
                 for ope, value in ope_dict.items():
                     if ope == 'pipe':
                         command = self.__variables.expand(value)
-                        content = Output.pipe(content, command)
+                        content = Command.transform(content, command)
             print(re.sub('\n$', '', content))
-
-    def pipe(input_text, command):
-        proc = subprocess.run(
-            command, shell=True, input=input_text, stdout=PIPE, text=True)
-        return proc.stdout
 
     def set(self, output):
         self.__output = output
-
-    def awk_1(line, delimiter=None):
-        if delimiter is None:
-            stripped = line.lstrip(' ')
-            if '\t' in stripped or ' ' in stripped:
-                return stripped[:stripped.replace('\t', ' ').find(' ')]
-            else:
-                return stripped
-        else:
-            return line[:line.find(delimiter):]
