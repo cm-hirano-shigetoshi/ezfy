@@ -15,39 +15,69 @@ p.add_argument('--p1')
 p.add_argument('--p3')
 args = p.parse_args()
 
+if args.delimiter is not None and len(args.delimiter) > 1:
+    print('[Error] Delimiter must be ONE character', file=sys.stderr)
+    sys.exit(1)
+
 try:
 
-    def get_parts(line):
-        if args.delimiter is not None:
-            pattern = r'[^{}]+'.format(args.delimiter)
-        else:
-            pattern = r'\S+'
+    def get_parts(line, pattern):
         if args.nth == 0:
             return ('', line, '')
         elif args.nth > 0:
             count = 0
-            for m in re.finditer(pattern, line):
-                count += 1
-                if count >= args.nth:
+            if args.delimiter is None:
+                for m in re.finditer(pattern, line):
+                    count += 1
+                    if count >= args.nth:
+                        left = line[:m.start()]
+                        target = m.group(0)
+                        right = line[m.end():]
+                        return (left, target, right)
+                return (line, '', '')
+            else:
+                start = 0
+                for m in re.finditer(pattern, line + args.delimiter):
+                    count += 1
+                    if count >= args.nth:
+                        left = line[:start]
+                        target = line[start:m.start()-1]
+                        right = line[m.end()-1:]
+                        return (left, target, right)
+                    start = m.end()
+                return (line, '', '')
+        elif args.nth < 0:
+            matches = []
+            if args.delimiter is None:
+                for m in re.finditer(pattern, line):
+                    matches.append(m)
+                if len(matches) >= -args.nth:
+                    m = matches[len(matches) + args.nth]
                     left = line[:m.start()]
                     target = m.group(0)
                     right = line[m.end():]
                     return (left, target, right)
-            return (line, '', '')
-        elif args.nth < 0:
-            matches = []
-            for m in re.finditer(pattern, line):
-                matches.append(m)
-            if len(matches) >= -args.nth:
-                m = matches[len(matches) + args.nth]
-                left = line[:m.start()]
-                target = m.group(0)
-                right = line[m.end():]
-                return (left, target, right)
-            return ('', '', line)
+                return ('', '', line)
+            else:
+                for m in re.finditer(pattern, line + args.delimiter):
+                    matches.append(m)
+                if len(matches) >= -args.nth:
+                    end = 0
+                    if len(matches) + args.nth - 1 >= 0:
+                        end = matches[len(matches) + args.nth - 1].end()
+                    m = matches[len(matches) + args.nth]
+                    left = line[:end]
+                    target = line[end:m.start()]
+                    right = line[m.start():]
+                    return (left, target, right)
+                return ('', '', line)
 
     if len(args.command) > 0:
         sys.stdout.reconfigure(line_buffering=True)
+        if args.delimiter is None:
+            pattern = r'\S+'
+        else:
+            pattern = r'[{}]'.format(args.delimiter)
         with tempfile.TemporaryDirectory() as tmpdir:
             p1 = os.path.join(tmpdir, 'p1')
             p2 = os.path.join(tmpdir, 'p2')
@@ -66,7 +96,7 @@ try:
                     with open(p3, 'w') as p3:
                         line = sys.stdin.readline()
                         while line:
-                            parts = get_parts(line)
+                            parts = get_parts(line.strip('\n'), pattern)
                             print(parts[0], file=p1)
                             print(parts[1], file=p2)
                             print(parts[2], file=p3)
