@@ -38,8 +38,8 @@ try:
                     count += 1
                     if count >= args.nth:
                         left = line[:start]
-                        target = line[start:m.start() - 1]
-                        right = line[m.end() - 1:]
+                        target = line[start:m.start()]
+                        right = line[m.start():]
                         return (left, target, right)
                     start = m.end()
                 return (line, '', '')
@@ -95,6 +95,7 @@ try:
                     while line:
                         i += 1
                         parts = get_parts(line.strip('\n'), pattern)
+                        # print('{0[0]}|{0[1]}|{0[2]}'.format(parts))
                         print('l:{}\t{}'.format(i, parts[0]), file=p1)
                         print('{}'.format(parts[1]), file=p2)
                         print('r:{}\t{}'.format(i, parts[2]), file=p1)
