@@ -1,10 +1,13 @@
 base_task:
   input: cat ~/xxdr.pl
   transform: cat -n | awk '{print $1}'
-  preview: echo {visible:2..-1}
+  preview: echo {}
   opts:
   - reverse
   - multi
+  bind:
+    alt-p: select-all
+    alt-a: execute-silent(echo {2..} >> ~/.debug)
   output:
       enter:
       - pipe: cat
@@ -19,8 +22,6 @@ switch_task:
     transform: ''
     opts:
     - multi
-    bind:
-      alt-p: select-all
     output:
       enter:
       - pipe: sed 's/^/XXXX/'

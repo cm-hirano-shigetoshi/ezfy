@@ -18,7 +18,7 @@ class Task():
                 self.__opts.get('delimiter', None))
             self.__query = yml.get('query', '')
             self.__preview = yml.get('preview', '')
-            self.__bind = Bind(yml.get('bind', {}))
+            self.__bind = Bind(yml.get('bind', {}), self.__variables, self.__transform)
             self.__output = Output(yml.get('output', {}), variables)
 
             self.__switch_expect = switch_expect
@@ -52,7 +52,7 @@ class Task():
     def __get_bind(self):
         bind = self.__bind.to_string()
         if len(bind) > 0:
-            return '--bind="{}"'.format(self.__bind.to_string())
+            return "--bind='{}'".format(bind)
         else:
             return ''
 
