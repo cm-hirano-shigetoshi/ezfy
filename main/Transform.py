@@ -33,6 +33,11 @@ class Transform():
         return Command.execute('cat {} | {} "{}"'.format(
             Temporary.temp_path('transform'), line_selector, indexes))
 
+    def __adjust_visible(self, preview):
+        for m in re.finditer(r'{visible:([^}]*)}', preview):
+            preview = preview.replace(m.group(0), '{' + Transform.shift_index(m.group(1)) + '}')
+        return preview
+
     def adjust_preview(self, preview):
         # {}           => 範囲指定なし
         # {..}         => range(1,-1)
@@ -66,5 +71,24 @@ class Transform():
                 '' if self.__delimiter is None else "-F '{}'".format(
                     self.__delimiter), m.group(1))
             preview = preview.replace(m.group(0), '$({})'.format(cmd))
+        preview = self.__adjust_visible(preview)
         preview = preview.replace('{index}', '{1}')
         return preview
+
+    def shift_index(index):
+        if len(index) == 0 or index == '..':
+            return '2..'
+        m = re.match(r'[1-9][0-9]*$', index)
+        if m is not None:
+            return str(int(index) + 1)
+        m = re.match(r'(-?[1-9][0-9]*)\.\.(-?[1-9][0-9]*)', index)
+        if m is not None:
+            s = m.group(1)
+            e = m.group(2)
+            if len(s) > 0 and not s.startswith('-'):
+                s = str(int(s) + 1)
+            if len(e) > 0 and not e.startswith('-'):
+                e = str(int(e) + 1)
+            return '{}..{}'.format(s, e)
+        return index
+
