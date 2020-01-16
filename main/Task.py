@@ -2,20 +2,29 @@ from Opts import Opts
 from Bind import Bind
 from Output import Output
 from Transform import Transform
+from Temporary import Temporary
 
 
 class Task():
-    def __init__(self, yml, variables, switch_expect):
-        self.__yml = yml
-        self.__variables = variables
-        self.__set_input(yml['input'])
-        self.__transform = Transform(yml.get('transform', ''), variables)
-        self.__opts = Opts(yml.get('opts', []), variables)
-        self.__query = yml.get('query', '')
-        self.__preview = yml.get('preview', '')
-        self.__bind = Bind(yml.get('bind', {}), variables)
-        self.__output = Output(yml.get('output', {}), variables)
-        self.__switch_expect = switch_expect
+    def __init__(self, yml=None, variables=None, switch_expect=None):
+        if yml is not None:
+            self.__variables = variables
+
+            self.__variables.set_vars(yml.get('vars', []))
+            self.__opts = Opts(yml.get('opts', []), variables)
+            self.__set_input(yml['input'])
+            self.__transform = Transform(
+                yml.get('transform', ''), variables,
+                self.__opts.get('delimiter', None))
+            self.__query = yml.get('query', '')
+            self.__preview = yml.get('preview', '')
+            self.__bind = Bind(yml.get('bind', {}), self.__variables, self.__transform)
+            self.__output = Output(yml.get('output', {}), variables)
+
+            self.__switch_expect = switch_expect
+
+    def get_transform(self):
+        return self.__transform
 
     def __get_input(self):
         return self.__variables.expand(self.__input)
@@ -26,8 +35,8 @@ class Task():
     def __get_preview(self):
         if len(self.__preview) > 0:
             preview = self.__preview
-            if self.__transform.exists():
-                preview = Transform.adjust_preview(preview)
+            if not self.__transform.is_empty():
+                preview = self.__transform.adjust_preview(preview)
             preview = self.__variables.expand(preview)
             return "--preview='{}'".format(preview)
         else:
@@ -43,9 +52,15 @@ class Task():
     def __get_bind(self):
         bind = self.__bind.to_string()
         if len(bind) > 0:
-            return '--bind="{}"'.format(self.__bind.to_string())
+            return "--bind='{}'".format(bind)
         else:
             return ''
+
+    #
+    # Switching to the new task
+    #
+    def __set_vars(self, var):
+        self.__variables.set_vars(var)
 
     def __set_input(self, input_text):
         self.__input = input_text
@@ -71,9 +86,6 @@ class Task():
     def __set_transform_opts(self):
         self.__opts.set_nth_for_transform()
 
-    def set_pre(self, result):
-        self.__variables.set_pre(result, self.__transform)
-
     def __get_expect(self):
         expects = self.__switch_expect + self.__output.get_expect()
         if 'enter' not in expects:
@@ -85,12 +97,36 @@ class Task():
                                        self.__get_preview(), self.__get_bind(),
                                        self.__get_expect())
 
+    def __get_transform_cat_n(self):
+        delimiter = self.__opts.get('delimiter', None)
+        if delimiter is None:
+            return 'cat -n'
+        else:
+            cat = 'cat -n'
+            sed = "sed 's/^\\s*\\([0-9]\\+\\)\\t/\\1{}/'".format(delimiter)
+            return '{} | {}'.format(cat, sed)
+
+    def clone(self):
+        new_task = Task()
+        new_task.__variables = self.__variables
+        new_task.__input = self.__input
+        new_task.__transform = self.__transform
+        new_task.__opts = self.__opts
+        new_task.__query = self.__query
+        new_task.__preview = self.__preview
+        new_task.__bind = self.__bind
+        new_task.__output = self.__output
+        new_task.__switch_expect = self.__switch_expect
+        return new_task
+
     def get_cmd(self):
-        if self.__transform.exists():
+        if not self.__transform.is_empty():
             self.__set_transform_opts()
-            cmd = '{} | tee {} | {} | cat -n | fzf {}'.format(
-                self.__get_input(), Transform.get_temp_name(),
-                self.__transform.get_cmd(), self.__get_fzf_options())
+            Temporary.create_temp_file('transform')
+            cmd = '{} | tee {} | {} | {} | SHELL=bash fzf {}'.format(
+                self.__get_input(), Temporary.temp_path('transform'),
+                self.__transform.get_cmd(), self.__get_transform_cat_n(),
+                self.__get_fzf_options())
             return cmd
         else:
             cmd = '{} | fzf {}'.format(self.__get_input(),
@@ -98,17 +134,12 @@ class Task():
             return cmd
 
     def output(self, result):
-        query = result.split('\n')[0]
-        key = result.split('\n')[1]
-        content = '\n'.join(result.split('\n')[2:])
-        self.__output.write(query, key, content, self.__transform)
-
-    def is_switch(self, result):
-        key = result.split('\n')[1]
-        return key in self.__switch_expect
+        self.__output.write(result)
 
     def create_switch_task(self, switch_dict):
-        new_task = Task(self.__yml, self.__variables, self.__switch_expect)
+        new_task = self.clone()
+        if 'vars' in switch_dict:
+            new_task.__set_vars(switch_dict['vars'])
         if 'input' in switch_dict:
             new_task.__set_input(switch_dict['input'])
         if 'transform' in switch_dict:

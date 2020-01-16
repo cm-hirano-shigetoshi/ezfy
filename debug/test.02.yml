@@ -1,21 +1,27 @@
 base_task:
   input: cat ~/xxdr.pl
   transform: cat -n | awk '{print $1}'
-  preview: echo "{}"
+  preview: echo {}
   opts:
   - reverse
   - multi
+  bind:
+    alt-p: select-all
+    alt-a: execute-silent(echo {2..} >> ~/.debug)
   output:
       enter:
       - pipe: cat
 switch_task:
+  ctrl-d:
+    vars:
+        - var1: '{var1|aaa|bbb}'
   ctrl-r:
-    input: echo "{pre_content}"
+    vars:
+        - var1: "{pre_content}"
+    input: echo "{var1}"
     transform: ''
     opts:
     - multi
-    bind:
-      alt-p: select-all
     output:
       enter:
       - pipe: sed 's/^/XXXX/'
