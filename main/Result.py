@@ -1,6 +1,7 @@
 class Result():
     def __init__(self, result_text, transform):
         self.__content = ''
+        self.key = ''
         if len(result_text) > 0:
             self.query = result_text.split('\n')[0]
             self.key = result_text.split('\n')[1]
@@ -8,7 +9,7 @@ class Result():
             self.__transform = transform
 
     def is_empty(self):
-        return len(self.__content) == 0
+        return len(self.__content) == 0 and len(self.key) == 0
 
     def get_content(self):
         if self.__transform.is_empty():
